@@ -21,4 +21,27 @@ public class Detalles_factura {
     @JoinColumn (name ="id_factura")
     private Factura factura;
 
+    public Long getId_detalle() {
+        return id_detalle;
+    }
+
+    public void setId_detalle(Long id_detalle) {
+        this.id_detalle = id_detalle;
+    }
+
+    public Pelicula getPelicula() {
+        return pelicula;
+    }
+
+    public void setPelicula(Pelicula pelicula) {
+        this.pelicula = pelicula;
+    }
+
+    public Factura getFactura() {
+        return factura;
+    }
+
+    public void setFactura(Factura factura) {
+        this.factura = factura;
+    }
 }
