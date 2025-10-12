@@ -13,6 +13,7 @@ import lombok.Data;
 public class Detalles_factura {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id_detalle;
 
     @ManyToOne

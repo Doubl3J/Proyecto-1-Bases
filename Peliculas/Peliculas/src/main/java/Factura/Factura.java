@@ -13,6 +13,7 @@ import lombok.Data;
 public class Factura {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id_factura;
     private String fecha_factura;
     private Long total_factura;

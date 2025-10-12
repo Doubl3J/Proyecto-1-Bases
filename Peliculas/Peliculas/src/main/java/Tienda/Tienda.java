@@ -11,6 +11,7 @@ import lombok.Data;
 public class Tienda {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id_tienda;
     private String nombre_tienda;
     private String direccion_exacta;

@@ -11,6 +11,7 @@ import lombok.Data;
 public class Pelicula {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id_pelicula;
     private String nombre_pelicula;
     private String idioma;

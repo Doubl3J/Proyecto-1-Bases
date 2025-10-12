@@ -10,6 +10,7 @@ import lombok.Data;
 public class Provincia {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id_provincia;
     private String nombre_provincia;
 

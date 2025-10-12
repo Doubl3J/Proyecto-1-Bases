@@ -12,6 +12,7 @@ import lombok.Data;
 public class Inventario {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id_inventario;
 
     private int cantidad_disponible;
