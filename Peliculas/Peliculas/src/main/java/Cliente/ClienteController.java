@@ -53,5 +53,5 @@ public class ClienteController {
     }
 
     @DeleteMapping("/delete/{id}")
-    public void deletePersona(@PathVariable Long id) {clienteRepository.deleteById(id);}
+    public void deleteCliente(@PathVariable Long id) {clienteRepository.deleteById(id);}
 }
