@@ -1,4 +1,4 @@
-package Entities;
+package Cliente;
 
 import jakarta.persistence.*;
 import lombok.Data;

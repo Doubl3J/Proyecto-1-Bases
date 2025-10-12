@@ -1,4 +1,4 @@
-package Entities;
+package Genero;
 
 import jakarta.persistence.*;
 import lombok.Data;

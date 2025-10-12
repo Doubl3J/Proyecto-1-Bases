@@ -1,5 +1,6 @@
-package Entities;
+package Pelicula;
 
+import Genero.Genero;
 import jakarta.persistence.*;
 import lombok.Data;
 

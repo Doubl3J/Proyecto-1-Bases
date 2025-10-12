@@ -1,5 +1,7 @@
-package Entities;
+package Detalles_factura;
 
+import Factura.Factura;
+import Pelicula.Pelicula;
 import jakarta.persistence.*;
 import lombok.Data;
 

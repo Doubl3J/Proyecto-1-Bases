@@ -1,5 +1,6 @@
-package Entities;
+package Tienda;
 
+import Provincia.Provincia;
 import jakarta.persistence.*;
 import lombok.Data;
 

@@ -1,5 +1,7 @@
-package Entities;
+package Factura;
 
+import Cliente.Cliente;
+import Tienda.Tienda;
 import jakarta.persistence.*;
 import lombok.Data;
 
