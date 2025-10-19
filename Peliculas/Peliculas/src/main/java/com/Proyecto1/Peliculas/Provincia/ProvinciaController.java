@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping ("/provincia/")
+@RequestMapping ("/provincia")
 public class ProvinciaController {
     @Autowired
     private ProvinciaRepo provinciaRepository;
