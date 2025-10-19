@@ -21,8 +21,6 @@ public class Factura {
     @Column (nullable = false)
     private String fecha_factura;
 
-    @NotBlank(message = "Total de factura no puede estar vacío")
-    @Column (nullable = false)
     private Long total_factura;
 
     @ManyToOne

@@ -21,8 +21,6 @@ public class Pelicula {
 
     private String idioma;
 
-    @NotBlank(message = "Precio de película no puede estar vacío")
-    @Column (nullable = false)
     private Long precio_venta;
 
     @ManyToOne

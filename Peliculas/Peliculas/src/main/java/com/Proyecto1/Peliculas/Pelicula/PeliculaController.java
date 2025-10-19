@@ -15,9 +15,7 @@ public class PeliculaController {
     private PeliculaRepo peliculaRepository;
 
     @PostMapping("/add")
-    public void createPelicula(@Valid  @RequestBody Pelicula pelicula){
-        peliculaRepository.save(pelicula);
-    }
+    public void createPelicula(@Valid  @RequestBody Pelicula pelicula){peliculaRepository.save(pelicula);}
 
     @PostMapping ("/addAll")
     public List<Pelicula> createAllPelicula(@Valid @RequestBody List<Pelicula> peliculaList){
