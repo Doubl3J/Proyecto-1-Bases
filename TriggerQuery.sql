@@ -5,10 +5,11 @@ BEGIN
         INSERT INTO Respaldo(nombre_tabla,id_tabla,operacion,fecha_hora,usuario,datos_anteriores,datos_nuevos)
         VALUES (
             'Cliente', NEW.cedula, 'UPDATE', CURRENT_TIMESTAMP, CURRENT_USER,
-            'OLD Nombre: ' || OLD.nombre || ' P_Apellido: ' || OLD.primer_apellido || ' S_Apellido: ' || OLD.segundo_apellido ||
-            ' Email: ' || OLD.email || ' Telefono: ' || OLD.numero_telefono,
-            'NEW Nombre: ' || NEW.nombre || ' P_Apellido: ' || NEW.primer_apellido || ' S_Apellido: ' || NEW.segundo_apellido ||
-            ' Email: ' || NEW.email || ' Telefono: ' || NEW.numero_telefono
+            'OLD Nombre: ' || OLD.nombre || ' P_Apellido: ' || OLD.primer_apellido || ' S_Apellido: ' || COALESCE(OLD.segundo_apellido, 'N/A') ||
+            ' Email: ' || OLD.email || ' Telefono: ' || COALESCE(OLD.numero_telefono, 0),
+			
+            'NEW Nombre: ' || NEW.nombre || ' P_Apellido: ' || NEW.primer_apellido || ' S_Apellido: ' || COALESCE(NEW.segundo_apellido, 'N/A') ||
+            ' Email: ' || NEW.email || ' Telefono: ' || COALESCE(NEW.numero_telefono, 0)
         );
         RETURN NEW;
 
@@ -16,8 +17,8 @@ BEGIN
         INSERT INTO Respaldo(nombre_tabla,id_tabla,operacion,fecha_hora,usuario,datos_anteriores)
         VALUES(
             'Cliente', OLD.cedula, 'DELETE', CURRENT_TIMESTAMP, CURRENT_USER,
-            'OLD Nombre: ' || OLD.nombre || ' P_Apellido: ' || OLD.primer_apellido || ' S_Apellido: ' || OLD.segundo_apellido ||
-            ' Email: ' || OLD.email || ' Telefono: ' || OLD.numero_telefono
+            'OLD Nombre: ' || OLD.nombre || ' P_Apellido: ' || OLD.primer_apellido || ' S_Apellido: ' || COALESCE(OLD.segundo_apellido, 'N/A') ||
+            ' Email: ' || OLD.email || ' Telefono: ' || COALESCE(OLD.numero_telefono, 0)
         );
         RETURN OLD;
 
@@ -25,15 +26,15 @@ BEGIN
         INSERT INTO Respaldo(nombre_tabla,id_tabla,operacion,fecha_hora,usuario,datos_nuevos)
         VALUES(
             'Cliente', NEW.cedula, 'INSERT', CURRENT_TIMESTAMP, CURRENT_USER,
-            'NEW Nombre: ' || NEW.nombre || ' P_Apellido: ' || NEW.primer_apellido || ' S_Apellido: ' || NEW.segundo_apellido ||
-            ' Email: ' || NEW.email || ' Telefono: ' || NEW.numero_telefono
+            'NEW Nombre: ' || NEW.nombre || ' P_Apellido: ' || NEW.primer_apellido || ' S_Apellido: ' || COALESCE(NEW.segundo_apellido, 'N/A') ||
+            ' Email: ' || NEW.email || ' Telefono: ' || COALESCE(NEW.numero_telefono, 0)
         );
         RETURN NEW;
     END IF;
 
-    RETURN NULL;
 END;
 $$ LANGUAGE plpgsql;
+
 
 CREATE TRIGGER respaldo_cliente
 BEFORE UPDATE OR DELETE OR INSERT
@@ -52,9 +53,9 @@ BEGIN
         VALUES (
             'Pelicula', NEW.id_pelicula, 'UPDATE', CURRENT_TIMESTAMP, CURRENT_USER,
 
-            'OLD: Nombre_Pelicula: ' || OLD.nombre_pelicula || ' Idioma: ' || OLD.idioma || ' Precio_Venta: ' || OLD.precio_venta || ' Id_genero: ' || old.id_genero,
+            'OLD: Nombre_Pelicula: ' || OLD.nombre_pelicula || ' Idioma: ' || COALESCE(OLD.idioma, 'N/A') || ' Precio_Venta: ' || COALESCE(OLD.precio_venta, 0) || ' Id_genero: ' || old.id_genero,
            
-            'NEW: Nombre_Pelicula: ' || NEW.nombre_pelicula || ' Idioma: ' || NEW.idioma || ' Precio_Venta: ' || NEW.precio_venta || ' Id_genero: ' || new.id_genero
+            'NEW: Nombre_Pelicula: ' || NEW.nombre_pelicula || ' Idioma: ' || COALESCE(NEW.idioma, 'N/A') || ' Precio_Venta: ' || COALESCE(NEW.precio_venta, 0) || ' Id_genero: ' || new.id_genero
         );
         RETURN NEW;
 
@@ -65,7 +66,7 @@ BEGIN
         VALUES(
             'Pelicula', OLD.id_pelicula, 'DELETE', CURRENT_TIMESTAMP, CURRENT_USER,
 
-            'OLD: Nombre_Pelicula: ' || OLD.nombre_pelicula || ' Idioma: ' || OLD.idioma || ' Precio_Venta: ' || OLD.precio_venta || ' Id_genero: ' || old.id_genero
+            'OLD: Nombre_Pelicula: ' || OLD.nombre_pelicula || ' Idioma: ' || COALESCE(OLD.idioma, 'N/A') || ' Precio_Venta: ' || COALESCE(OLD.precio_venta, 0) || ' Id_genero: ' || old.id_genero
         );
         RETURN OLD;
 
@@ -76,7 +77,7 @@ BEGIN
         VALUES(
             'Pelicula', NEW.id_pelicula, 'INSERT', CURRENT_TIMESTAMP, CURRENT_USER,
 
-            'NEW: Nombre_Pelicula: ' || NEW.nombre_pelicula || ' Idioma: ' || NEW.idioma || ' Precio_Venta: ' || NEW.precio_venta || ' Id_genero: ' || new.id_genero
+            'NEW: Nombre_Pelicula: ' || NEW.nombre_pelicula || ' Idioma: ' || COALESCE(NEW.idioma, 'N/A') || ' Precio_Venta: ' || COALESCE(NEW.precio_venta, 0) || ' Id_genero: ' || new.id_genero
         );
         RETURN NEW;
 
@@ -101,11 +102,11 @@ BEGIN
         VALUES (
             'Tienda', NEW.id_tienda, 'UPDATE', CURRENT_TIMESTAMP, CURRENT_USER,
 
-            'OLD: Nombre_Tienda: ' || OLD.nombre_tienda || ' Direccion: ' || OLD.direccion_exacta ||
-            ' Telefono: ' || OLD.telefono_tienda || ' Email: ' || OLD.email_tienda || ' Provincia: ' || old.id_provincia,
+            'OLD: Nombre_Tienda: ' || OLD.nombre_tienda || ' Direccion: ' ||  COALESCE(OLD.direccion_exacta, 'N/A') ||
+            ' Telefono: ' || COALESCE(OLD.telefono_tienda, 0) || ' Email: ' || OLD.email_tienda || ' Provincia: ' || old.id_provincia,
             
-            'NEW: Nombre_Tienda: ' || NEW.nombre_tienda || ' Direccion: ' || NEW.direccion_exacta || 
-            ' Telefono: ' || NEW.telefono_tienda || ' Email: ' || NEW.email_tienda || ' Provincia: ' || new.id_provincia
+            'NEW: Nombre_Tienda: ' || NEW.nombre_tienda || ' Direccion: ' || COALESCE(NEW.direccion_exacta, 'N/A' || 
+            ' Telefono: ' || COALESCE(NEW.telefono_tienda, 0) || ' Email: ' || NEW.email_tienda || ' Provincia: ' || new.id_provincia
         );
         
         RETURN NEW;
@@ -118,8 +119,8 @@ BEGIN
         VALUES(
             'Tienda', OLD.id_tienda, 'DELETE', CURRENT_TIMESTAMP, CURRENT_USER,
             
-            'OLD: Nombre_Tienda: ' || OLD.nombre_tienda || ' Direccion: ' || OLD.direccion_exacta ||
-            ' Telefono: ' || OLD.telefono_tienda || ' Email: ' || OLD.email_tienda || ' Provincia: ' || OLD.id_provincia
+            'OLD: Nombre_Tienda: ' || OLD.nombre_tienda || ' Direccion: ' || COALESCE(OLD.direccion_exacta, 'N/A') ||
+            ' Telefono: ' || COALESCE(OLD.telefono_tienda, 0) || ' Email: ' || OLD.email_tienda || ' Provincia: ' || OLD.id_provincia
         );
         
         RETURN OLD;
@@ -132,8 +133,8 @@ BEGIN
         VALUES(
             'Tienda', NEW.id_tienda, 'INSERT', CURRENT_TIMESTAMP, CURRENT_USER,
             
-            'NEW: Nombre_Tienda: ' || NEW.nombre_tienda || ' Direccion: ' || NEW.direccion_exacta ||
-            ' Telefono: ' || NEW.telefono_tienda || ' Email: ' || NEW.email_tienda || ' Provincia: ' || new.id_provincia
+            'NEW: Nombre_Tienda: ' || NEW.nombre_tienda || ' Direccion: ' || COALESCE(NEW.direccion_exacta, 'N/A' ||
+            ' Telefono: ' || COALESCE(NEW.telefono_tienda, 0) || ' Email: ' || NEW.email_tienda || ' Provincia: ' || new.id_provincia
         );
         
         RETURN NEW;
@@ -158,9 +159,9 @@ BEGIN
         VALUES (
             'Factura', NEW.id_factura, 'UPDATE', CURRENT_TIMESTAMP, CURRENT_USER,
 
-            'OLD: Fecha_Factura: ' || OLD.fecha_factura || ' Total_Factura: ' || OLD.total_factura || ' Id_Cliente: ' || old.id_cliente || ' Id_Tienda: ' || old.id_tienda,
+            'OLD: Fecha_Factura: ' || OLD.fecha_factura || ' Total_Factura: ' || COALESCE(OLD.total_factura, 0) || ' Id_Cliente: ' || old.id_cliente || ' Id_Tienda: ' || old.id_tienda,
             
-            'NEW: Fecha_Factura: ' || NEW.fecha_factura || ' Total_Factura: ' || NEW.total_factura || ' Id_Cliente: ' || new.id_cliente || ' Id_Tienda: ' || new.id_tienda
+            'NEW: Fecha_Factura: ' || NEW.fecha_factura || ' Total_Factura: ' || COALESCE(NEW.total_factura , 0)|| ' Id_Cliente: ' || new.id_cliente || ' Id_Tienda: ' || new.id_tienda
         );
         RETURN NEW;
 
@@ -171,7 +172,7 @@ BEGIN
         VALUES(
             'Factura', OLD.id_factura, 'DELETE', CURRENT_TIMESTAMP, CURRENT_USER,
             
-            'OLD: Fecha_Factura: ' || OLD.fecha_factura || ' Total_Factura: ' || OLD.total_factura || ' Id_Cliente: ' || old.id_cliente || ' Id_Tienda: ' || old.id_tienda
+            'OLD: Fecha_Factura: ' || OLD.fecha_factura || ' Total_Factura: ' || COALESCE(OLD.total_factura, 0) || ' Id_Cliente: ' || old.id_cliente || ' Id_Tienda: ' || old.id_tienda
         );
         RETURN OLD;
 
@@ -182,7 +183,7 @@ BEGIN
         VALUES(
             'Factura', NEW.id_factura, 'INSERT', CURRENT_TIMESTAMP, CURRENT_USER,
 
-            'NEW: Fecha_Factura: ' || NEW.fecha_factura || ' Total_Factura: ' || NEW.total_factura || ' Id_Cliente: ' || new.id_cliente || ' Id_Tienda: ' || new.id_tienda
+            'NEW: Fecha_Factura: ' || NEW.fecha_factura || ' Total_Factura: ' || COALESCE(NEW.total_factura , 0) || ' Id_Cliente: ' || new.id_cliente || ' Id_Tienda: ' || new.id_tienda
         );
         RETURN NEW;
 
@@ -199,7 +200,6 @@ EXECUTE PROCEDURE respaldo_factura();
 CREATE OR REPLACE FUNCTION respaldo_genero() RETURNS TRIGGER AS $$
 BEGIN
 
-    -- == UPDATE OPERATION ==
     IF TG_OP = 'UPDATE' THEN
         INSERT INTO Respaldo(
             nombre_tabla, id_tabla, operacion, fecha_hora, usuario, datos_anteriores, datos_nuevos
@@ -207,11 +207,11 @@ BEGIN
         VALUES (
             'Genero', NEW.id_genero, 'UPDATE', CURRENT_TIMESTAMP, CURRENT_USER,
             'OLD: Nombre_Genero: ' || OLD.nombre_genero,
+			
             'NEW: Nombre_Genero: ' || NEW.nombre_genero
         );
         RETURN NEW;
 
-    -- == DELETE OPERATION ==
     ELSIF TG_OP = 'DELETE' THEN
         INSERT INTO Respaldo(
             nombre_tabla, id_tabla, operacion, fecha_hora, usuario, datos_anteriores
@@ -222,7 +222,6 @@ BEGIN
         );
         RETURN OLD;
 
-    -- == INSERT OPERATION ==
     ELSIF TG_OP = 'INSERT' THEN
         INSERT INTO Respaldo(
             nombre_tabla, id_tabla, operacion, fecha_hora, usuario, datos_nuevos
@@ -250,7 +249,6 @@ EXECUTE PROCEDURE respaldo_genero();
 CREATE OR REPLACE FUNCTION respaldo_provincia() RETURNS TRIGGER AS $$
 BEGIN
 
-    -- == UPDATE OPERATION ==
     IF TG_OP = 'UPDATE' THEN
         INSERT INTO Respaldo(
             nombre_tabla, id_tabla, operacion, fecha_hora, usuario, datos_anteriores, datos_nuevos
@@ -258,11 +256,11 @@ BEGIN
         VALUES (
             'Provincia', NEW.id_provincia, 'UPDATE', CURRENT_TIMESTAMP, CURRENT_USER,
             'OLD: Nombre_Provincia: ' || OLD.nombre_provincia,
+			
             'NEW: Nombre_Provincia: ' || NEW.nombre_provincia
         );
         RETURN NEW;
 
-    -- == DELETE OPERATION ==
     ELSIF TG_OP = 'DELETE' THEN
         INSERT INTO Respaldo(
             nombre_tabla, id_tabla, operacion, fecha_hora, usuario, datos_anteriores
@@ -273,7 +271,6 @@ BEGIN
         );
         RETURN OLD;
 
-    -- == INSERT OPERATION ==
     ELSIF TG_OP = 'INSERT' THEN
         INSERT INTO Respaldo(
             nombre_tabla, id_tabla, operacion, fecha_hora, usuario, datos_nuevos
@@ -300,7 +297,6 @@ EXECUTE PROCEDURE respaldo_provincia();
 CREATE OR REPLACE FUNCTION respaldo_detalles_factura() RETURNS TRIGGER AS $$
 BEGIN
 
-    -- == UPDATE OPERATION ==
     IF TG_OP = 'UPDATE' THEN
         INSERT INTO Respaldo(
             nombre_tabla, id_tabla, operacion, fecha_hora, usuario, datos_anteriores, datos_nuevos
@@ -308,11 +304,11 @@ BEGIN
         VALUES (
             'Detalles_Factura', NEW.id_detalle, 'UPDATE', CURRENT_TIMESTAMP, CURRENT_USER,
             'OLD: id_pelicula: ' || OLD.id_pelicula || ' id_factura: ' || OLD.id_factura,
+			
             'NEW: id_pelicula: ' || NEW.id_pelicula || ' id_factura: ' || NEW.id_factura
         );
         RETURN NEW;
 
-    -- == DELETE OPERATION ==
     ELSIF TG_OP = 'DELETE' THEN
         INSERT INTO Respaldo(
             nombre_tabla, id_tabla, operacion, fecha_hora, usuario, datos_anteriores
@@ -323,7 +319,6 @@ BEGIN
         );
         RETURN OLD;
 
-    -- == INSERT OPERATION ==
     ELSIF TG_OP = 'INSERT' THEN
         INSERT INTO Respaldo(
             nombre_tabla, id_tabla, operacion, fecha_hora, usuario, datos_nuevos
@@ -351,43 +346,41 @@ EXECUTE PROCEDURE respaldo_detalles_factura();
 CREATE OR REPLACE FUNCTION respaldo_inventario() RETURNS TRIGGER AS $$
 BEGIN
 
-    -- == UPDATE OPERATION ==
     IF TG_OP = 'UPDATE' THEN
         INSERT INTO Respaldo(
             nombre_tabla, id_tabla, operacion, fecha_hora, usuario, datos_anteriores, datos_nuevos
         )
         VALUES (
             'Inventario', NEW.id_inventario, 'UPDATE', CURRENT_TIMESTAMP, CURRENT_USER,
-            'OLD: cantidad_disponible: ' || OLD.cantidad_disponible || 
+            'OLD: cantidad_disponible: ' || COALESCE(OLD.cantidad_disponible , 0) || 
             ' id_pelicula: ' || OLD.id_pelicula || 
             ' id_tienda: ' || OLD.id_tienda,
-            'NEW: cantidad_disponible: ' || NEW.cantidad_disponible || 
+			
+            'NEW: cantidad_disponible: ' || COALESCE(NEW.cantidad_disponible , 0) || 
             ' id_pelicula: ' || NEW.id_pelicula || 
             ' id_tienda: ' || NEW.id_tienda
         );
         RETURN NEW;
 
-    -- == DELETE OPERATION ==
     ELSIF TG_OP = 'DELETE' THEN
         INSERT INTO Respaldo(
             nombre_tabla, id_tabla, operacion, fecha_hora, usuario, datos_anteriores
         )
         VALUES (
             'Inventario', OLD.id_inventario, 'DELETE', CURRENT_TIMESTAMP, CURRENT_USER,
-            'OLD: cantidad_disponible: ' || OLD.cantidad_disponible || 
+            'OLD: cantidad_disponible: ' || COALESCE(OLD.cantidad_disponible , 0) || 
             ' id_pelicula: ' || OLD.id_pelicula || 
             ' id_tienda: ' || OLD.id_tienda
         );
         RETURN OLD;
 
-    -- == INSERT OPERATION ==
     ELSIF TG_OP = 'INSERT' THEN
         INSERT INTO Respaldo(
             nombre_tabla, id_tabla, operacion, fecha_hora, usuario, datos_nuevos
         )
         VALUES (
             'Inventario', NEW.id_inventario, 'INSERT', CURRENT_TIMESTAMP, CURRENT_USER,
-            'NEW: cantidad_disponible: ' || NEW.cantidad_disponible || 
+            'NEW: cantidad_disponible: ' || COALESCE(NEW.cantidad_disponible , 0) || 
             ' id_pelicula: ' || NEW.id_pelicula || 
             ' id_tienda: ' || NEW.id_tienda
         );
