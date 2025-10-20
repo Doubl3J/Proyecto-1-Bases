@@ -105,7 +105,7 @@ BEGIN
             'OLD: Nombre_Tienda: ' || OLD.nombre_tienda || ' Direccion: ' ||  COALESCE(OLD.direccion_exacta, 'N/A') ||
             ' Telefono: ' || COALESCE(OLD.telefono_tienda, 0) || ' Email: ' || OLD.email_tienda || ' Provincia: ' || old.id_provincia,
             
-            'NEW: Nombre_Tienda: ' || NEW.nombre_tienda || ' Direccion: ' || COALESCE(NEW.direccion_exacta, 'N/A' || 
+            'NEW: Nombre_Tienda: ' || NEW.nombre_tienda || ' Direccion: ' || COALESCE(NEW.direccion_exacta, 'N/A') || 
             ' Telefono: ' || COALESCE(NEW.telefono_tienda, 0) || ' Email: ' || NEW.email_tienda || ' Provincia: ' || new.id_provincia
         );
         
@@ -133,7 +133,7 @@ BEGIN
         VALUES(
             'Tienda', NEW.id_tienda, 'INSERT', CURRENT_TIMESTAMP, CURRENT_USER,
             
-            'NEW: Nombre_Tienda: ' || NEW.nombre_tienda || ' Direccion: ' || COALESCE(NEW.direccion_exacta, 'N/A' ||
+            'NEW: Nombre_Tienda: ' || NEW.nombre_tienda || ' Direccion: ' || COALESCE(NEW.direccion_exacta, 'N/A') ||
             ' Telefono: ' || COALESCE(NEW.telefono_tienda, 0) || ' Email: ' || NEW.email_tienda || ' Provincia: ' || new.id_provincia
         );
         
