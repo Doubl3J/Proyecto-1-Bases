@@ -8,7 +8,7 @@ import lombok.Data;
 
 @Entity
 @Data
-@Table(name="inventario")
+@Table(name="inventario",  uniqueConstraints = {@UniqueConstraint(name = "uc_pelicula_tienda",columnNames = {"id_pelicula","id_tienda"})})
 
 public class Inventario {
 
