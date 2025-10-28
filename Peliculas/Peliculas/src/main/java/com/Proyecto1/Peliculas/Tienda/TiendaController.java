@@ -9,34 +9,39 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/tienda")
-
+@CrossOrigin(origins = "*")
 public class TiendaController {
     @Autowired
     private TiendaRepo tiendaRepository;
 
     @PostMapping("/add")
+    @CrossOrigin(origins = "*")
     public void createTienda(@Valid @RequestBody Tienda tienda){
         tiendaRepository.save(tienda);
     }
 
     @PostMapping ("/addAll")
+    @CrossOrigin(origins = "*")
     public List<Tienda> createAllTienda(@Valid @RequestBody List<Tienda> tiendaList){
         return tiendaRepository.saveAll(tiendaList);
     }
 
     @GetMapping ("/readAll")
+    @CrossOrigin(origins = "*")
     public List<Tienda> getAllTienda (){
         List<Tienda> tiendaList = tiendaRepository.findAll();
         return tiendaList;
     }
 
     @GetMapping ("/readById/{id}")
+    @CrossOrigin(origins = "*")
     public Tienda getTienda(@PathVariable Long id){
         Tienda tienda = tiendaRepository.findById(id).orElse(null);
         return tienda;
     }
 
     @PutMapping ("/update/{id}")
+    @CrossOrigin(origins = "*")
     public Tienda updateTienda(@Valid @PathVariable Long id, @RequestBody Tienda tiendaActualizado){
         Tienda existe = tiendaRepository.findById(id).orElse(null);
 
@@ -55,5 +60,6 @@ public class TiendaController {
     }
 
     @DeleteMapping("/delete/{id}")
+    @CrossOrigin(origins = "*")
     public void deleteTienda(@PathVariable Long id) {tiendaRepository.deleteById(id);}
 }

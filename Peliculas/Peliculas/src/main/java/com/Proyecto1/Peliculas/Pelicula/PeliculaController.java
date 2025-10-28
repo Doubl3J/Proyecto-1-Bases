@@ -9,32 +9,38 @@ import java.util.List;
 
 @RestController
 @RequestMapping ("/pelicula")
+@CrossOrigin(origins = "*")
 public class PeliculaController {
 
     @Autowired
     private PeliculaRepo peliculaRepository;
 
     @PostMapping("/add")
+    @CrossOrigin(origins = "*")
     public void createPelicula(@Valid  @RequestBody Pelicula pelicula){peliculaRepository.save(pelicula);}
 
     @PostMapping ("/addAll")
+    @CrossOrigin(origins = "*")
     public List<Pelicula> createAllPelicula(@Valid @RequestBody List<Pelicula> peliculaList){
         return peliculaRepository.saveAll(peliculaList);
     }
 
     @GetMapping ("/readAll")
+    @CrossOrigin(origins = "*")
     public List<Pelicula> getAllPelicula (){
         List<Pelicula> peliculaList = peliculaRepository.findAll();
         return peliculaList;
     }
 
     @GetMapping ("/readById/{id}")
+    @CrossOrigin(origins = "*")
     public Pelicula getPelicula(@PathVariable Long id){
         Pelicula pelicula = peliculaRepository.findById(id).orElse(null);
         return pelicula;
     }
 
     @PutMapping ("/update/{id}")
+    @CrossOrigin(origins = "*")
     public Pelicula updatePelicula(@Valid @PathVariable Long id, @RequestBody Pelicula peliculaActualizado){
         Pelicula existe = peliculaRepository.findById(id).orElse(null);
 
@@ -52,6 +58,7 @@ public class PeliculaController {
     }
 
     @DeleteMapping("/delete/{id}")
+    @CrossOrigin(origins = "*")
     public void deletePelicula(@PathVariable Long id) {peliculaRepository.deleteById(id);}
 
 }

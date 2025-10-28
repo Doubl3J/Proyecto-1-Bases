@@ -1,0 +1,3559 @@
+¿<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema de Gestión</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background: #f8f9fa;
+            color: #333;
+        }
+
+        .app-container {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: 250px;
+            background: #2c3e50;
+            color: white;
+        }
+
+        .sidebar-header {
+            padding: 25px 20px;
+            border-bottom: 1px solid #34495e;
+            background: #1a252f;
+        }
+
+        .sidebar-header h2 {
+            font-size: 1.4rem;
+            font-weight: 600;
+        }
+
+        .sidebar-menu {
+            list-style: none;
+            padding: 15px 0;
+        }
+
+        .menu-item {
+            display: flex;
+            align-items: center;
+            padding: 15px 25px;
+            color: #bdc3c7;
+            text-decoration: none;
+            border-left: 4px solid transparent;
+            transition: all 0.3s;
+            font-weight: 500;
+        }
+
+        .menu-item:hover {
+            background: #34495e;
+            color: white;
+            border-left-color: #3498db;
+        }
+
+        .menu-item.active {
+            background: #34495e;
+            color: white;
+            border-left-color: #3498db;
+        }
+
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            padding: 30px;
+            overflow-y: auto;
+        }
+
+        .content-section {
+            display: none;
+        }
+
+        .content-section.active {
+            display: block;
+        }
+
+        .section-header {
+            margin-bottom: 30px;
+        }
+
+        .section-header h1 {
+            font-size: 2rem;
+            color: #2c3e50;
+            margin-bottom: 10px;
+        }
+
+        /* CRUD Components */
+        .crud-container {
+            display: grid;
+            gap: 30px;
+            grid-template-columns: 1fr 2fr;
+        }
+
+        .form-container {
+            background: white;
+            padding: 25px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            height: fit-content;
+        }
+
+        .form-container h3 {
+            margin-bottom: 20px;
+            color: #2c3e50;
+            font-size: 1.3rem;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #34495e;
+            font-weight: 500;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #ecf0f1;
+            border-radius: 6px;
+            font-size: 14px;
+            transition: border-color 0.3s;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: #3498db;
+        }
+
+        .form-control.error {
+            border-color: #e74c3c;
+        }
+
+        .error-message {
+            color: #e74c3c;
+            font-size: 12px;
+            margin-top: 5px;
+        }
+
+        .btn {
+            padding: 12px 25px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .btn-primary {
+            background: #3498db;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #2980b9;
+        }
+
+        .btn-success {
+            background: #27ae60;
+            color: white;
+        }
+
+        .btn-success:hover {
+            background: #219a52;
+        }
+
+        .btn-danger {
+            background: #e74c3c;
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: #c0392b;
+        }
+
+        .btn-warning {
+            background: #f39c12;
+            color: white;
+        }
+
+        .btn-warning:hover {
+            background: #d35400;
+        }
+
+        .btn-info {
+            background: #17a2b8;
+            color: white;
+        }
+
+        .btn-info:hover {
+            background: #138496;
+        }
+
+        /* Table Styles */
+        .table-container {
+            background: white;
+            padding: 25px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .table-container h3 {
+            margin-bottom: 20px;
+            color: #2c3e50;
+            font-size: 1.3rem;
+        }
+
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .data-table th,
+        .data-table td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid #ecf0f1;
+        }
+
+        .data-table th {
+            background: #f8f9fa;
+            color: #2c3e50;
+            font-weight: 600;
+        }
+
+        .data-table tr:hover {
+            background: #f8f9fa;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 8px;
+        }
+
+        .btn-sm {
+            padding: 6px 12px;
+            font-size: 12px;
+        }
+
+        /* Messages */
+        .message {
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 6px;
+            font-weight: 500;
+        }
+
+        .message.success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .message.error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        /* Search and Filters */
+        .search-container {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+
+        .search-box {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+
+        .search-input {
+            flex: 1;
+            padding: 12px 15px;
+            border: 2px solid #ecf0f1;
+            border-radius: 6px;
+            font-size: 14px;
+        }
+
+        .badge {
+            background: #3498db;
+            color: white;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        .badge-warning {
+            background: #f39c12;
+        }
+
+        .badge-success {
+            background: #27ae60;
+        }
+
+        .badge-danger {
+            background: #e74c3c;
+        }
+
+        /* JSON Viewer */
+        .json-viewer {
+            background: #f8f9fa;
+            border: 1px solid #e9ecef;
+            border-radius: 6px;
+            padding: 12px;
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+            max-height: 150px;
+            overflow-y: auto;
+            white-space: pre-wrap;
+            word-break: break-all;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .app-container {
+                flex-direction: column;
+            }
+
+            .sidebar {
+                width: 100%;
+            }
+
+            .crud-container {
+                grid-template-columns: 1fr;
+            }
+
+            .main-content {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <!-- Sidebar Navigation -->
+        <nav class="sidebar">
+            <div class="sidebar-header">
+                <h2>🏢 Sistema de Gestión</h2>
+            </div>
+            <ul class="sidebar-menu">
+                <li><a href="#clientes" class="menu-item active" onclick="showSection('clientes')">
+                    👥 Clientes
+                </a></li>
+                <li><a href="#generos" class="menu-item" onclick="showSection('generos')">
+                    🎭 Géneros
+                </a></li>
+                <li><a href="#peliculas" class="menu-item" onclick="showSection('peliculas')">
+                    🎬 Películas
+                </a></li>
+                <li><a href="#inventario" class="menu-item" onclick="showSection('inventario')">
+                    📦 Inventario
+                </a></li>
+                <li><a href="#facturas" class="menu-item" onclick="showSection('facturas')">
+                    🧾 Facturas
+                </a></li>
+                <li><a href="#detalles-factura" class="menu-item" onclick="showSection('detalles-factura')">
+                    📋 Detalles Factura
+                </a></li>
+                <li><a href="#provincias" class="menu-item" onclick="showSection('provincias')">
+                    🗺️ Provincias
+                </a></li>
+                <!-- Nueva sección de Tiendas -->
+                <li><a href="#tiendas" class="menu-item" onclick="showSection('tiendas')">
+                    🏪 Tiendas
+                </a></li>
+                <!-- Nueva sección de Respaldo -->
+                <li><a href="#respaldo" class="menu-item" onclick="showSection('respaldo')">
+                    💾 Respaldo
+                </a></li>
+            </ul>
+        </nav>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Clientes Section -->
+            <section id="clientes" class="content-section active">
+                <div class="section-header">
+                    <h1>👥 Gestión de Clientes</h1>
+                    <p>Administrar clientes del sistema</p>
+                </div>
+
+                <div class="crud-container">
+                    <!-- Formulario -->
+                    <div class="form-container">
+                        <h3 id="form-title">➕ Agregar Cliente</h3>
+                        <form id="cliente-form">
+                            <input type="hidden" id="cliente-id">
+                            
+                            <div class="form-group">
+                                <label for="cedula">Cédula *</label>
+                                <input type="number" id="cedula" class="form-control" placeholder="Ej: 12345678" required>
+                                <div class="error-message" id="cedula-error"></div>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="nombre">Nombre *</label>
+                                <input type="text" id="nombre" class="form-control" placeholder="Ej: Juan" required>
+                                <div class="error-message" id="nombre-error"></div>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="primer-apellido">Primer Apellido *</label>
+                                <input type="text" id="primer-apellido" class="form-control" placeholder="Ej: Pérez" required>
+                                <div class="error-message" id="primer-apellido-error"></div>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="segundo-apellido">Segundo Apellido</label>
+                                <input type="text" id="segundo-apellido" class="form-control" placeholder="Ej: González">
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="email">Email *</label>
+                                <input type="email" id="email" class="form-control" placeholder="Ej: juan@email.com" required>
+                                <div class="error-message" id="email-error"></div>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="telefono">Número de Teléfono *</label>
+                                <input type="number" id="telefono" class="form-control" placeholder="Ej: 70123456" required>
+                                <div class="error-message" id="telefono-error"></div>
+                            </div>
+                            
+                            <button type="submit" class="btn btn-primary" style="width: 100%;">
+                                💾 Guardar Cliente
+                            </button>
+                            <button type="button" class="btn btn-warning" style="width: 100%; margin-top: 10px;" onclick="limpiarFormulario()">
+                                🧹 Limpiar Formulario
+                            </button>
+                        </form>
+                    </div>
+
+                    <!-- Tabla -->
+                    <div class="table-container">
+                        <div class="search-container">
+                            <div class="search-box">
+                                <input type="text" id="buscar-clientes" class="search-input" placeholder="Buscar por nombre, email o cédula..." onkeyup="filtrarClientes()">
+                                <button class="btn btn-success" onclick="cargarClientes()">🔄 Actualizar Lista</button>
+                            </div>
+                        </div>
+                        
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                            <h3>📋 Lista de Clientes</h3>
+                            <span class="badge" id="contador-clientes">0 clientes</span>
+                        </div>
+                        
+                        <div style="overflow-x: auto;">
+                            <table class="data-table" id="tabla-clientes">
+                                <thead>
+                                    <tr>
+                                        <th>Cédula</th>
+                                        <th>Nombre</th>
+                                        <th>Primer Apellido</th>
+                                        <th>Segundo Apellido</th>
+                                        <th>Email</th>
+                                        <th>Teléfono</th>
+                                        <th>Acciones</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="clientes-tbody">
+                                    <tr>
+                                        <td colspan="7" style="text-align: center; padding: 20px;">
+                                            <div id="loading-clientes">🔄 Cargando clientes...</div>
+                                            <div id="no-clientes" style="display: none;">📝 No hay clientes registrados</div>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Géneros Section -->
+            <section id="generos" class="content-section">
+                <div class="section-header">
+                    <h1>🎭 Gestión de Géneros</h1>
+                    <p>Administrar géneros de películas del sistema</p>
+                </div>
+
+                <div class="crud-container">
+                    <!-- Formulario -->
+                    <div class="form-container">
+                        <h3 id="form-title-generos">➕ Agregar Género</h3>
+                        <form id="genero-form">
+                            <input type="hidden" id="genero-id">
+                            
+                            <div class="form-group">
+                                <label for="nombre-genero">Nombre del Género *</label>
+                                <input type="text" id="nombre-genero" class="form-control" placeholder="Ej: Acción, Comedia, Drama..." required>
+                                <div class="error-message" id="nombre-genero-error"></div>
+                            </div>
+                            
+                            <button type="submit" class="btn btn-primary" style="width: 100%;">
+                                💾 Guardar Género
+                            </button>
+                            <button type="button" class="btn btn-warning" style="width: 100%; margin-top: 10px;" onclick="limpiarFormularioGeneros()">
+                                🧹 Limpiar Formulario
+                            </button>
+                        </form>
+                    </div>
+
+                    <!-- Tabla -->
+                    <div class="table-container">
+                        <div class="search-container">
+                            <div class="search-box">
+                                <input type="text" id="buscar-generos" class="search-input" placeholder="Buscar por nombre de género..." onkeyup="filtrarGeneros()">
+                                <button class="btn btn-success" onclick="cargarGeneros()">🔄 Actualizar Lista</button>
+                            </div>
+                        </div>
+                        
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                            <h3>📋 Lista de Géneros</h3>
+                            <span class="badge" id="contador-generos">0 géneros</span>
+                        </div>
+                        
+                        <div style="overflow-x: auto;">
+                            <table class="data-table" id="tabla-generos">
+                                <thead>
+                                    <tr>
+                                        <th>ID Género</th>
+                                        <th>Nombre del Género</th>
+                                        <th>Acciones</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="generos-tbody">
+                                    <tr>
+                                        <td colspan="3" style="text-align: center; padding: 20px;">
+                                            <div id="loading-generos">🔄 Cargando géneros...</div>
+                                            <div id="no-generos" style="display: none;">📝 No hay géneros registrados</div>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Películas Section -->
+            <section id="peliculas" class="content-section">
+                <div class="section-header">
+                    <h1>🎬 Gestión de Películas</h1>
+                    <p>Administrar películas del sistema</p>
+                </div>
+
+                <div class="crud-container">
+                    <!-- Formulario -->
+                    <div class="form-container">
+                        <h3 id="form-title-peliculas">➕ Agregar Película</h3>
+                        <form id="pelicula-form">
+                            <input type="hidden" id="pelicula-id">
+                            
+                            <div class="form-group">
+                                <label for="nombre-pelicula">Nombre de Película *</label>
+                                <input type="text" id="nombre-pelicula" class="form-control" placeholder="Ej: Avengers: Endgame" required>
+                                <div class="error-message" id="nombre-pelicula-error"></div>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="idioma">Idioma</label>
+                                <input type="text" id="idioma" class="form-control" placeholder="Ej: Español, Inglés...">
+                                <div class="error-message" id="idioma-error"></div>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="precio-venta">Precio de Venta</label>
+                                <input type="number" id="precio-venta" class="form-control" placeholder="Ej: 25000" min="0">
+                                <div class="error-message" id="precio-venta-error"></div>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="id-genero-peli">ID Género *</label>
+                                <input type="number" id="id-genero-peli" class="form-control" placeholder="Ej: 1" required>
+                                <div class="error-message" id="genero-peli-error"></div>
+                            </div>
+                            
+                            <button type="submit" class="btn btn-primary" style="width: 100%;">
+                                💾 Guardar Película
+                            </button>
+                            <button type="button" class="btn btn-warning" style="width: 100%; margin-top: 10px;" onclick="limpiarFormularioPeliculas()">
+                                🧹 Limpiar Formulario
+                            </button>
+                        </form>
+                    </div>
+
+                    <!-- Tabla -->
+                    <div class="table-container">
+                        <div class="search-container">
+                            <div class="search-box">
+                                <input type="text" id="buscar-peliculas" class="search-input" placeholder="Buscar por nombre, idioma o precio..." onkeyup="filtrarPeliculas()">
+                                <button class="btn btn-success" onclick="cargarPeliculas()">🔄 Actualizar Lista</button>
+                            </div>
+                        </div>
+                        
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                            <h3>📋 Lista de Películas</h3>
+                            <span class="badge" id="contador-peliculas">0 películas</span>
+                        </div>
+                        
+                        <div style="overflow-x: auto;">
+                            <table class="data-table" id="tabla-peliculas">
+                                <thead>
+                                    <tr>
+                                        <th>ID Película</th>
+                                        <th>Nombre</th>
+                                        <th>Idioma</th>
+                                        <th>Precio Venta</th>
+                                        <th>ID Género</th>
+                                        <th>Acciones</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="peliculas-tbody">
+                                    <tr>
+                                        <td colspan="6" style="text-align: center; padding: 20px;">
+                                            <div id="loading-peliculas">🔄 Cargando películas...</div>
+                                            <div id="no-peliculas" style="display: none;">📝 No hay películas registradas</div>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Inventario Section -->
+            <section id="inventario" class="content-section">
+                <div class="section-header">
+                    <h1>📦 Gestión de Inventario</h1>
+                    <p>Administrar inventario de películas en tiendas</p>
+                </div>
+
+                <div class="crud-container">
+                    <!-- Formulario -->
+                    <div class="form-container">
+                        <h3 id="form-title-inventario">➕ Agregar al Inventario</h3>
+                        <form id="inventario-form">
+                            <input type="hidden" id="inventario-id">
+                            
+                            <div class="form-group">
+                                <label for="cantidad-disponible">Cantidad Disponible *</label>
+                                <input type="number" id="cantidad-disponible" class="form-control" placeholder="Ej: 10" required min="0">
+                                <div class="error-message" id="cantidad-disponible-error"></div>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="id-pelicula-inv">ID Película *</label>
+                                <input type="number" id="id-pelicula-inv" class="form-control" placeholder="Ej: 1" required>
+                                <div class="error-message" id="pelicula-inv-error"></div>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="id-tienda-inv">ID Tienda *</label>
+                                <input type="number" id="id-tienda-inv" class="form-control" placeholder="Ej: 1" required>
+                                <div class="error-message" id="tienda-inv-error"></div>
+                            </div>
+                            
+                            <button type="submit" class="btn btn-primary" style="width: 100%;">
+                                💾 Guardar Inventario
+                            </button>
+                            <button type="button" class="btn btn-warning" style="width: 100%; margin-top: 10px;" onclick="limpiarFormularioInventario()">
+                                🧹 Limpiar Formulario
+                            </button>
+                        </form>
+                    </div>
+
+                    <!-- Tabla -->
+                    <div class="table-container">
+                        <div class="search-container">
+                            <div class="search-box">
+                                <input type="text" id="buscar-inventario" class="search-input" placeholder="Buscar por ID, cantidad, película o tienda..." onkeyup="filtrarInventario()">
+                                <button class="btn btn-success" onclick="cargarInventario()">🔄 Actualizar Lista</button>
+                            </div>
+                        </div>
+                        
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                            <h3>📋 Lista de Inventario</h3>
+                            <span class="badge" id="contador-inventario">0 registros</span>
+                        </div>
+                        
+                        <div style="overflow-x: auto;">
+                            <table class="data-table" id="tabla-inventario">
+                                <thead>
+                                    <tr>
+                                        <th>ID Inventario</th>
+                                        <th>Cantidad Disponible</th>
+                                        <th>ID Película</th>
+                                        <th>ID Tienda</th>
+                                        <th>Acciones</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="inventario-tbody">
+                                    <tr>
+                                        <td colspan="5" style="text-align: center; padding: 20px;">
+                                            <div id="loading-inventario">🔄 Cargando inventario...</div>
+                                            <div id="no-inventario" style="display: none;">📝 No hay registros en el inventario</div>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Facturas Section -->
+            <section id="facturas" class="content-section">
+                <div class="section-header">
+                    <h1>🧾 Gestión de Facturas</h1>
+                    <p>Administrar facturas del sistema</p>
+                </div>
+
+                <div class="crud-container">
+                    <!-- Formulario -->
+                    <div class="form-container">
+                        <h3 id="form-title-facturas">➕ Agregar Factura</h3>
+                        <form id="factura-form">
+                            <input type="hidden" id="factura-id">
+                            
+                            <div class="form-group">
+                                <label for="fecha-factura">Fecha Factura *</label>
+                                <input type="date" id="fecha-factura" class="form-control" required>
+                                <div class="error-message" id="fecha-factura-error"></div>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="total-factura">Total Factura</label>
+                                <input type="number" id="total-factura" class="form-control" placeholder="Ej: 100000">
+                                <div class="error-message" id="total-factura-error"></div>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="id-cliente">ID Cliente *</label>
+                                <input type="number" id="id-cliente" class="form-control" placeholder="Ej: 1" required>
+                                <div class="error-message" id="cliente-error"></div>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="id-tienda">ID Tienda *</label>
+                                <input type="number" id="id-tienda" class="form-control" placeholder="Ej: 1" required>
+                                <div class="error-message" id="tienda-error"></div>
+                            </div>
+                            
+                            <button type="submit" class="btn btn-primary" style="width: 100%;">
+                                💾 Guardar Factura
+                            </button>
+                            <button type="button" class="btn btn-warning" style="width: 100%; margin-top: 10px;" onclick="limpiarFormularioFacturas()">
+                                🧹 Limpiar Formulario
+                            </button>
+                        </form>
+                    </div>
+
+                    <!-- Tabla -->
+                    <div class="table-container">
+                        <div class="search-container">
+                            <div class="search-box">
+                                <input type="text" id="buscar-facturas" class="search-input" placeholder="Buscar por ID, fecha o total..." onkeyup="filtrarFacturas()">
+                                <button class="btn btn-success" onclick="cargarFacturas()">🔄 Actualizar Lista</button>
+                            </div>
+                        </div>
+                        
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                            <h3>📋 Lista de Facturas</h3>
+                            <span class="badge" id="contador-facturas">0 facturas</span>
+                        </div>
+                        
+                        <div style="overflow-x: auto;">
+                            <table class="data-table" id="tabla-facturas">
+                                <thead>
+                                    <tr>
+                                        <th>ID Factura</th>
+                                        <th>Fecha</th>
+                                        <th>Total</th>
+                                        <th>ID Cliente</th>
+                                        <th>ID Tienda</th>
+                                        <th>Acciones</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="facturas-tbody">
+                                    <tr>
+                                        <td colspan="6" style="text-align: center; padding: 20px;">
+                                            <div id="loading-facturas">🔄 Cargando facturas...</div>
+                                            <div id="no-facturas" style="display: none;">📝 No hay facturas registradas</div>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Detalles Factura Section -->
+            <section id="detalles-factura" class="content-section">
+                <div class="section-header">
+                    <h1>📋 Gestión de Detalles Factura</h1>
+                    <p>Administrar detalles de factura del sistema</p>
+                </div>
+
+                <div class="crud-container">
+                    <!-- Formulario -->
+                    <div class="form-container">
+                        <h3 id="form-title-detalles">➕ Agregar Detalle Factura</h3>
+                        <form id="detalles-form">
+                            <input type="hidden" id="detalle-id">
+                            
+                            <div class="form-group">
+                                <label for="id-pelicula">ID Película *</label>
+                                <input type="number" id="id-pelicula" class="form-control" placeholder="Ej: 1" required>
+                                <div class="error-message" id="pelicula-error"></div>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="id-factura">ID Factura *</label>
+                                <input type="number" id="id-factura" class="form-control" placeholder="Ej: 1" required>
+                                <div class="error-message" id="factura-error"></div>
+                            </div>
+                            
+                            <button type="submit" class="btn btn-primary" style="width: 100%;">
+                                💾 Guardar Detalle
+                            </button>
+                            <button type="button" class="btn btn-warning" style="width: 100%; margin-top: 10px;" onclick="limpiarFormularioDetalles()">
+                                🧹 Limpiar Formulario
+                            </button>
+                        </form>
+                    </div>
+
+                    <!-- Tabla -->
+                    <div class="table-container">
+                        <div class="search-container">
+                            <div class="search-box">
+                                <input type="text" id="buscar-detalles" class="search-input" placeholder="Buscar por ID película o factura..." onkeyup="filtrarDetalles()">
+                                <button class="btn btn-success" onclick="cargarDetallesFactura()">🔄 Actualizar Lista</button>
+                            </div>
+                        </div>
+                        
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                            <h3>📋 Lista de Detalles Factura</h3>
+                            <span class="badge" id="contador-detalles">0 detalles</span>
+                        </div>
+                        
+                        <div style="overflow-x: auto;">
+                            <table class="data-table" id="tabla-detalles">
+                                <thead>
+                                    <tr>
+                                        <th>ID Detalle</th>
+                                        <th>ID Película</th>
+                                        <th>ID Factura</th>
+                                        <th>Acciones</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="detalles-tbody">
+                                    <tr>
+                                        <td colspan="4" style="text-align: center; padding: 20px;">
+                                            <div id="loading-detalles">🔄 Cargando detalles...</div>
+                                            <div id="no-detalles" style="display: none;">📝 No hay detalles registrados</div>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Provincias Section -->
+            <section id="provincias" class="content-section">
+                <div class="section-header">
+                    <h1>🗺️ Gestión de Provincias</h1>
+                    <p>Administrar provincias del sistema</p>
+                </div>
+
+                <div class="crud-container">
+                    <!-- Formulario -->
+                    <div class="form-container">
+                        <h3 id="form-title-provincias">➕ Agregar Provincia</h3>
+                        <form id="provincia-form">
+                            <input type="hidden" id="provincia-id">
+                            
+                            <div class="form-group">
+                                <label for="nombre-provincia">Nombre de Provincia *</label>
+                                <input type="text" id="nombre-provincia" class="form-control" placeholder="Ej: San José, Alajuela, Cartago..." required>
+                                <div class="error-message" id="nombre-provincia-error"></div>
+                            </div>
+                            
+                            <button type="submit" class="btn btn-primary" style="width: 100%;">
+                                💾 Guardar Provincia
+                            </button>
+                            <button type="button" class="btn btn-warning" style="width: 100%; margin-top: 10px;" onclick="limpiarFormularioProvincias()">
+                                🧹 Limpiar Formulario
+                            </button>
+                        </form>
+                    </div>
+
+                    <!-- Tabla -->
+                    <div class="table-container">
+                        <div class="search-container">
+                            <div class="search-box">
+                                <input type="text" id="buscar-provincias" class="search-input" placeholder="Buscar por nombre de provincia..." onkeyup="filtrarProvincias()">
+                                <button class="btn btn-success" onclick="cargarProvincias()">🔄 Actualizar Lista</button>
+                            </div>
+                        </div>
+                        
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                            <h3>📋 Lista de Provincias</h3>
+                            <span class="badge" id="contador-provincias">0 provincias</span>
+                        </div>
+                        
+                        <div style="overflow-x: auto;">
+                            <table class="data-table" id="tabla-provincias">
+                                <thead>
+                                    <tr>
+                                        <th>ID Provincia</th>
+                                        <th>Nombre de Provincia</th>
+                                        <th>Acciones</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="provincias-tbody">
+                                    <tr>
+                                        <td colspan="3" style="text-align: center; padding: 20px;">
+                                            <div id="loading-provincias">🔄 Cargando provincias...</div>
+                                            <div id="no-provincias" style="display: none;">📝 No hay provincias registradas</div>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Nueva sección: Tiendas -->
+            <section id="tiendas" class="content-section">
+                <div class="section-header">
+                    <h1>🏪 Gestión de Tiendas</h1>
+                    <p>Administrar tiendas del sistema</p>
+                </div>
+
+                <div class="crud-container">
+                    <!-- Formulario -->
+                    <div class="form-container">
+                        <h3 id="form-title-tiendas">➕ Agregar Tienda</h3>
+                        <form id="tienda-form">
+                            <input type="hidden" id="tienda-id">
+                            
+                            <div class="form-group">
+                                <label for="nombre-tienda">Nombre de Tienda *</label>
+                                <input type="text" id="nombre-tienda" class="form-control" placeholder="Ej: Tienda Central, Sucursal Norte..." required>
+                                <div class="error-message" id="nombre-tienda-error"></div>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="direccion-tienda">Dirección Exacta</label>
+                                <input type="text" id="direccion-tienda" class="form-control" placeholder="Ej: Calle 123, Avenida Central...">
+                                <div class="error-message" id="direccion-tienda-error"></div>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="telefono-tienda">Teléfono de Tienda *</label>
+                                <input type="number" id="telefono-tienda" class="form-control" placeholder="Ej: 22222222" required>
+                                <div class="error-message" id="telefono-tienda-error"></div>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="email-tienda">Email de Tienda *</label>
+                                <input type="email" id="email-tienda" class="form-control" placeholder="Ej: tienda@email.com" required>
+                                <div class="error-message" id="email-tienda-error"></div>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="id-provincia-tienda">ID Provincia *</label>
+                                <input type="number" id="id-provincia-tienda" class="form-control" placeholder="Ej: 1" required>
+                                <div class="error-message" id="provincia-tienda-error"></div>
+                            </div>
+                            
+                            <button type="submit" class="btn btn-primary" style="width: 100%;">
+                                💾 Guardar Tienda
+                            </button>
+                            <button type="button" class="btn btn-warning" style="width: 100%; margin-top: 10px;" onclick="limpiarFormularioTiendas()">
+                                🧹 Limpiar Formulario
+                            </button>
+                        </form>
+                    </div>
+
+                    <!-- Tabla -->
+                    <div class="table-container">
+                        <div class="search-container">
+                            <div class="search-box">
+                                <input type="text" id="buscar-tiendas" class="search-input" placeholder="Buscar por nombre, dirección, email..." onkeyup="filtrarTiendas()">
+                                <button class="btn btn-success" onclick="cargarTiendas()">🔄 Actualizar Lista</button>
+                            </div>
+                        </div>
+                        
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                            <h3>📋 Lista de Tiendas</h3>
+                            <span class="badge" id="contador-tiendas">0 tiendas</span>
+                        </div>
+                        
+                        <div style="overflow-x: auto;">
+                            <table class="data-table" id="tabla-tiendas">
+                                <thead>
+                                    <tr>
+                                        <th>ID Tienda</th>
+                                        <th>Nombre</th>
+                                        <th>Dirección</th>
+                                        <th>Teléfono</th>
+                                        <th>Email</th>
+                                        <th>ID Provincia</th>
+                                        <th>Acciones</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="tiendas-tbody">
+                                    <tr>
+                                        <td colspan="7" style="text-align: center; padding: 20px;">
+                                            <div id="loading-tiendas">🔄 Cargando tiendas...</div>
+                                            <div id="no-tiendas" style="display: none;">📝 No hay tiendas registradas</div>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Nueva sección: Respaldo -->
+            <section id="respaldo" class="content-section">
+                <div class="section-header">
+                    <h1>💾 Historial de Respaldo</h1>
+                    <p>Registro de cambios y operaciones en el sistema</p>
+                </div>
+
+                <div class="table-container">
+                    <div class="search-container">
+                        <div class="search-box">
+                            <input type="text" id="buscar-respaldo" class="search-input" placeholder="Buscar por tabla, operación, usuario..." onkeyup="filtrarRespaldo()">
+                            <button class="btn btn-success" onclick="cargarRespaldo()">🔄 Actualizar Lista</button>
+                            <button class="btn btn-info" onclick="exportarRespaldo()">📤 Exportar Respaldo</button>
+                        </div>
+                    </div>
+                    
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                        <h3>📋 Historial de Cambios</h3>
+                        <span class="badge" id="contador-respaldo">0 registros</span>
+                    </div>
+                    
+                    <div style="overflow-x: auto;">
+                        <table class="data-table" id="tabla-respaldo">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Tabla</th>
+                                    <th>ID Tabla</th>
+                                    <th>Operación</th>
+                                    <th>Fecha/Hora</th>
+                                    <th>Usuario</th>
+                                    <th>Datos Anteriores</th>
+                                    <th>Datos Nuevos</th>
+                                </tr>
+                            </thead>
+                            <tbody id="respaldo-tbody">
+                                <tr>
+                                    <td colspan="8" style="text-align: center; padding: 20px;">
+                                        <div id="loading-respaldo">🔄 Cargando historial de respaldo...</div>
+                                        <div id="no-respaldo" style="display: none;">📝 No hay registros de respaldo</div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script>
+        // Configuración base
+        const API_BASE = 'http://localhost:8080';
+        
+        // Variables globales para almacenar los datos
+        let clientesGlobal = [];
+        let generosGlobal = [];
+        let peliculasGlobal = [];
+        let inventarioGlobal = [];
+        let facturasGlobal = [];
+        let detallesGlobal = [];
+        let provinciasGlobal = [];
+        let tiendasGlobal = [];
+        let respaldoGlobal = [];
+
+        // ========== NAVEGACIÓN ==========
+        function showSection(sectionName, event) {
+            if (event) event.preventDefault();
+            
+            // Ocultar todas las secciones
+            document.querySelectorAll('.content-section').forEach(section => {
+                section.classList.remove('active');
+            });
+            
+            // Mostrar sección seleccionada
+            document.getElementById(sectionName).classList.add('active');
+            
+            // Actualizar menu activo
+            document.querySelectorAll('.menu-item').forEach(item => {
+                item.classList.remove('active');
+            });
+            
+            const activeItem = document.querySelector(`[href="#${sectionName}"]`);
+            if (activeItem) {
+                activeItem.classList.add('active');
+            }
+
+            // Cargar datos cuando se muestra una sección
+            switch(sectionName) {
+                case 'clientes':
+                    cargarClientes();
+                    break;
+                case 'generos':
+                    cargarGeneros();
+                    break;
+                case 'peliculas':
+                    cargarPeliculas();
+                    break;
+                case 'inventario':
+                    cargarInventario();
+                    break;
+                case 'facturas':
+                    cargarFacturas();
+                    break;
+                case 'detalles-factura':
+                    cargarDetallesFactura();
+                    break;
+                case 'provincias':
+                    cargarProvincias();
+                    break;
+                case 'tiendas':
+                    cargarTiendas();
+                    break;
+                case 'respaldo':
+                    cargarRespaldo();
+                    break;
+            }
+        }
+
+        // ========== MENSAJES ==========
+        function mostrarMensaje(mensaje, tipo = 'success') {
+            // Remover mensajes existentes
+            document.querySelectorAll('.message').forEach(msg => msg.remove());
+            
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${tipo}`;
+            messageDiv.textContent = mensaje;
+            
+            const header = document.querySelector('.section-header');
+            if (header && header.parentNode) {
+                header.parentNode.insertBefore(messageDiv, header.nextSibling);
+            }
+            
+            setTimeout(() => {
+                if (messageDiv.parentNode) {
+                    messageDiv.remove();
+                }
+            }, 5000);
+        }
+
+        // ========== VALIDACIÓN CLIENTES ==========
+        function validarFormulario() {
+            let valido = true;
+            
+            // Limpiar errores anteriores
+            document.querySelectorAll('.error-message').forEach(error => {
+                error.textContent = '';
+            });
+            document.querySelectorAll('.form-control').forEach(input => {
+                input.classList.remove('error');
+            });
+
+            const cedula = document.getElementById('cedula').value;
+            const nombre = document.getElementById('nombre').value;
+            const primerApellido = document.getElementById('primer-apellido').value;
+            const email = document.getElementById('email').value;
+            const telefono = document.getElementById('telefono').value;
+
+            // Validar cédula
+            if (!cedula) {
+                document.getElementById('cedula-error').textContent = 'La cédula es requerida';
+                document.getElementById('cedula').classList.add('error');
+                valido = false;
+            }
+
+            // Validar nombre
+            if (!nombre) {
+                document.getElementById('nombre-error').textContent = 'El nombre es requerido';
+                document.getElementById('nombre').classList.add('error');
+                valido = false;
+            }
+
+            // Validar primer apellido
+            if (!primerApellido) {
+                document.getElementById('primer-apellido-error').textContent = 'El primer apellido es requerido';
+                document.getElementById('primer-apellido').classList.add('error');
+                valido = false;
+            }
+
+            // Validar email
+            if (!email) {
+                document.getElementById('email-error').textContent = 'El email es requerido';
+                document.getElementById('email').classList.add('error');
+                valido = false;
+            } else if (!isValidEmail(email)) {
+                document.getElementById('email-error').textContent = 'El formato del email no es válido';
+                document.getElementById('email').classList.add('error');
+                valido = false;
+            }
+
+            // Validar teléfono
+            if (!telefono) {
+                document.getElementById('telefono-error').textContent = 'El teléfono es requerido';
+                document.getElementById('telefono').classList.add('error');
+                valido = false;
+            }
+
+            return valido;
+        }
+
+        // ========== VALIDACIÓN GÉNEROS ==========
+        function validarFormularioGeneros() {
+            let valido = true;
+            
+            // Limpiar errores anteriores
+            document.querySelectorAll('.error-message').forEach(error => {
+                error.textContent = '';
+            });
+            document.querySelectorAll('.form-control').forEach(input => {
+                input.classList.remove('error');
+            });
+
+            const nombreGenero = document.getElementById('nombre-genero').value;
+
+            // Validar nombre del género
+            if (!nombreGenero) {
+                document.getElementById('nombre-genero-error').textContent = 'El nombre del género es requerido';
+                document.getElementById('nombre-genero').classList.add('error');
+                valido = false;
+            }
+
+            return valido;
+        }
+
+        // ========== VALIDACIÓN PELÍCULAS ==========
+        function validarFormularioPeliculas() {
+            let valido = true;
+            
+            // Limpiar errores anteriores
+            document.querySelectorAll('.error-message').forEach(error => {
+                error.textContent = '';
+            });
+            document.querySelectorAll('.form-control').forEach(input => {
+                input.classList.remove('error');
+            });
+
+            const nombrePelicula = document.getElementById('nombre-pelicula').value;
+            const precioVenta = document.getElementById('precio-venta').value;
+            const idGenero = document.getElementById('id-genero-peli').value;
+
+            // Validar nombre de película
+            if (!nombrePelicula) {
+                document.getElementById('nombre-pelicula-error').textContent = 'El nombre de la película es requerido';
+                document.getElementById('nombre-pelicula').classList.add('error');
+                valido = false;
+            }
+
+            // Validar precio de venta
+            if (precioVenta && parseInt(precioVenta) < 0) {
+                document.getElementById('precio-venta-error').textContent = 'El precio no puede ser negativo';
+                document.getElementById('precio-venta').classList.add('error');
+                valido = false;
+            }
+
+            // Validar ID Género
+            if (!idGenero) {
+                document.getElementById('genero-peli-error').textContent = 'El ID de género es requerido';
+                document.getElementById('id-genero-peli').classList.add('error');
+                valido = false;
+            }
+
+            return valido;
+        }
+
+        // ========== VALIDACIÓN INVENTARIO ==========
+        function validarFormularioInventario() {
+            let valido = true;
+            
+            // Limpiar errores anteriores
+            document.querySelectorAll('.error-message').forEach(error => {
+                error.textContent = '';
+            });
+            document.querySelectorAll('.form-control').forEach(input => {
+                input.classList.remove('error');
+            });
+
+            const cantidadDisponible = document.getElementById('cantidad-disponible').value;
+            const idPelicula = document.getElementById('id-pelicula-inv').value;
+            const idTienda = document.getElementById('id-tienda-inv').value;
+
+            // Validar cantidad disponible
+            if (!cantidadDisponible) {
+                document.getElementById('cantidad-disponible-error').textContent = 'La cantidad disponible es requerida';
+                document.getElementById('cantidad-disponible').classList.add('error');
+                valido = false;
+            } else if (parseInt(cantidadDisponible) < 0) {
+                document.getElementById('cantidad-disponible-error').textContent = 'La cantidad no puede ser negativa';
+                document.getElementById('cantidad-disponible').classList.add('error');
+                valido = false;
+            }
+
+            // Validar ID Película
+            if (!idPelicula) {
+                document.getElementById('pelicula-inv-error').textContent = 'El ID de película es requerido';
+                document.getElementById('id-pelicula-inv').classList.add('error');
+                valido = false;
+            }
+
+            // Validar ID Tienda
+            if (!idTienda) {
+                document.getElementById('tienda-inv-error').textContent = 'El ID de tienda es requerido';
+                document.getElementById('id-tienda-inv').classList.add('error');
+                valido = false;
+            }
+
+            return valido;
+        }
+
+        // ========== VALIDACIÓN FACTURAS ==========
+        function validarFormularioFacturas() {
+            let valido = true;
+            
+            // Limpiar errores anteriores
+            document.querySelectorAll('.error-message').forEach(error => {
+                error.textContent = '';
+            });
+            document.querySelectorAll('.form-control').forEach(input => {
+                input.classList.remove('error');
+            });
+
+            const fechaFactura = document.getElementById('fecha-factura').value;
+            const idCliente = document.getElementById('id-cliente').value;
+            const idTienda = document.getElementById('id-tienda').value;
+
+            // Validar fecha factura
+            if (!fechaFactura) {
+                document.getElementById('fecha-factura-error').textContent = 'La fecha de factura es requerida';
+                document.getElementById('fecha-factura').classList.add('error');
+                valido = false;
+            }
+
+            // Validar ID Cliente
+            if (!idCliente) {
+                document.getElementById('cliente-error').textContent = 'El ID de cliente es requerido';
+                document.getElementById('id-cliente').classList.add('error');
+                valido = false;
+            }
+
+            // Validar ID Tienda
+            if (!idTienda) {
+                document.getElementById('tienda-error').textContent = 'El ID de tienda es requerido';
+                document.getElementById('id-tienda').classList.add('error');
+                valido = false;
+            }
+
+            return valido;
+        }
+
+        // ========== VALIDACIÓN DETALLES ==========
+        function validarFormularioDetalles() {
+            let valido = true;
+            
+            // Limpiar errores anteriores
+            document.querySelectorAll('.error-message').forEach(error => {
+                error.textContent = '';
+            });
+            document.querySelectorAll('.form-control').forEach(input => {
+                input.classList.remove('error');
+            });
+
+            const idPelicula = document.getElementById('id-pelicula').value;
+            const idFactura = document.getElementById('id-factura').value;
+
+            // Validar ID Película
+            if (!idPelicula) {
+                document.getElementById('pelicula-error').textContent = 'El ID de película es requerido';
+                document.getElementById('id-pelicula').classList.add('error');
+                valido = false;
+            }
+
+            // Validar ID Factura
+            if (!idFactura) {
+                document.getElementById('factura-error').textContent = 'El ID de factura es requerido';
+                document.getElementById('id-factura').classList.add('error');
+                valido = false;
+            }
+
+            return valido;
+        }
+
+        // ========== VALIDACIÓN PROVINCIAS ==========
+        function validarFormularioProvincias() {
+            let valido = true;
+            
+            // Limpiar errores anteriores
+            document.querySelectorAll('.error-message').forEach(error => {
+                error.textContent = '';
+            });
+            document.querySelectorAll('.form-control').forEach(input => {
+                input.classList.remove('error');
+            });
+
+            const nombreProvincia = document.getElementById('nombre-provincia').value;
+
+            // Validar nombre de la provincia
+            if (!nombreProvincia) {
+                document.getElementById('nombre-provincia-error').textContent = 'El nombre de la provincia es requerido';
+                document.getElementById('nombre-provincia').classList.add('error');
+                valido = false;
+            }
+
+            return valido;
+        }
+
+        // ========== VALIDACIÓN TIENDAS ==========
+        function validarFormularioTiendas() {
+            let valido = true;
+            
+            // Limpiar errores anteriores
+            document.querySelectorAll('.error-message').forEach(error => {
+                error.textContent = '';
+            });
+            document.querySelectorAll('.form-control').forEach(input => {
+                input.classList.remove('error');
+            });
+
+            const nombreTienda = document.getElementById('nombre-tienda').value;
+            const telefonoTienda = document.getElementById('telefono-tienda').value;
+            const emailTienda = document.getElementById('email-tienda').value;
+            const idProvincia = document.getElementById('id-provincia-tienda').value;
+
+            // Validar nombre de tienda
+            if (!nombreTienda) {
+                document.getElementById('nombre-tienda-error').textContent = 'El nombre de la tienda es requerido';
+                document.getElementById('nombre-tienda').classList.add('error');
+                valido = false;
+            }
+
+            // Validar teléfono
+            if (!telefonoTienda) {
+                document.getElementById('telefono-tienda-error').textContent = 'El teléfono de la tienda es requerido';
+                document.getElementById('telefono-tienda').classList.add('error');
+                valido = false;
+            }
+
+            // Validar email
+            if (!emailTienda) {
+                document.getElementById('email-tienda-error').textContent = 'El email de la tienda es requerido';
+                document.getElementById('email-tienda').classList.add('error');
+                valido = false;
+            } else if (!isValidEmail(emailTienda)) {
+                document.getElementById('email-tienda-error').textContent = 'El formato del email no es válido';
+                document.getElementById('email-tienda').classList.add('error');
+                valido = false;
+            }
+
+            // Validar ID Provincia
+            if (!idProvincia) {
+                document.getElementById('provincia-tienda-error').textContent = 'El ID de provincia es requerido';
+                document.getElementById('id-provincia-tienda').classList.add('error');
+                valido = false;
+            }
+
+            return valido;
+        }
+
+        function isValidEmail(email) {
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            return emailRegex.test(email);
+        }
+
+        // ========== CRUD CLIENTES ==========
+        document.getElementById('cliente-form').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            if (!validarFormulario()) {
+                return;
+            }
+
+            const clienteData = {
+                cedula: parseInt(document.getElementById('cedula').value),
+                nombre: document.getElementById('nombre').value.trim(),
+                primer_apellido: document.getElementById('primer-apellido').value.trim(),
+                segundo_apellido: document.getElementById('segundo-apellido').value.trim(),
+                email: document.getElementById('email').value.trim(),
+                numero_telefono: parseInt(document.getElementById('telefono').value)
+            };
+
+            const clienteId = document.getElementById('cliente-id').value;
+            const esEdicion = !!clienteId;
+
+            try {
+                mostrarMensaje(esEdicion ? 'Actualizando cliente...' : 'Creando cliente...');
+                
+                let response;
+                if (esEdicion) {
+                    // Actualizar cliente existente
+                    response = await fetch(`${API_BASE}/cliente/update/${clienteId}`, {
+                        method: 'PUT',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify(clienteData)
+                    });
+                } else {
+                    // Crear nuevo cliente
+                    response = await fetch(`${API_BASE}/cliente/add`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify(clienteData)
+                    });
+                }
+
+                if (response.ok) {
+                    const mensaje = esEdicion ? '✅ Cliente actualizado correctamente' : '✅ Cliente creado correctamente';
+                    mostrarMensaje(mensaje);
+                    
+                    // Recargar la lista completa para asegurar datos actualizados
+                    await cargarClientes();
+                    limpiarFormulario();
+                    
+                } else {
+                    const errorText = await response.text();
+                    throw new Error(errorText || 'Error en la respuesta del servidor');
+                }
+                
+            } catch (error) {
+                console.error('Error:', error);
+                mostrarMensaje('❌ Error al guardar cliente: ' + error.message, 'error');
+            }
+        });
+
+        // ========== CRUD GÉNEROS ==========
+        document.getElementById('genero-form').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            if (!validarFormularioGeneros()) {
+                return;
+            }
+
+            const generoData = {
+                nombre_genero: document.getElementById('nombre-genero').value.trim()
+            };
+
+            const generoId = document.getElementById('genero-id').value;
+            const esEdicion = !!generoId;
+
+            try {
+                mostrarMensaje(esEdicion ? 'Actualizando género...' : 'Creando género...');
+                
+                let response;
+                if (esEdicion) {
+                    // Actualizar género existente
+                    response = await fetch(`${API_BASE}/genero/update/${generoId}`, {
+                        method: 'PUT',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify(generoData)
+                    });
+                } else {
+                    // Crear nuevo género
+                    response = await fetch(`${API_BASE}/genero/add`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify(generoData)
+                    });
+                }
+
+                if (response.ok) {
+                    const mensaje = esEdicion ? '✅ Género actualizado correctamente' : '✅ Género creado correctamente';
+                    mostrarMensaje(mensaje);
+                    
+                    // Recargar la lista completa
+                    await cargarGeneros();
+                    limpiarFormularioGeneros();
+                    
+                } else {
+                    const errorText = await response.text();
+                    throw new Error(errorText || 'Error en la respuesta del servidor');
+                }
+                
+            } catch (error) {
+                console.error('Error:', error);
+                mostrarMensaje('❌ Error al guardar género: ' + error.message, 'error');
+            }
+        });
+
+        // ========== CRUD PELÍCULAS ==========
+        document.getElementById('pelicula-form').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            if (!validarFormularioPeliculas()) {
+                return;
+            }
+
+            const peliculaData = {
+                nombre_pelicula: document.getElementById('nombre-pelicula').value.trim(),
+                idioma: document.getElementById('idioma').value.trim() || null,
+                precio_venta: document.getElementById('precio-venta').value ? 
+                    parseInt(document.getElementById('precio-venta').value) : null,
+                id_genero: parseInt(document.getElementById('id-genero-peli').value)
+            };
+
+            const peliculaId = document.getElementById('pelicula-id').value;
+            const esEdicion = !!peliculaId;
+
+            try {
+                mostrarMensaje(esEdicion ? 'Actualizando película...' : 'Creando película...');
+                
+                let response;
+                if (esEdicion) {
+                    // Actualizar película existente
+                    response = await fetch(`${API_BASE}/pelicula/update/${peliculaId}`, {
+                        method: 'PUT',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify(peliculaData)
+                    });
+                } else {
+                    // Crear nueva película
+                    response = await fetch(`${API_BASE}/pelicula/add`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify(peliculaData)
+                    });
+                }
+
+                if (response.ok) {
+                    const mensaje = esEdicion ? '✅ Película actualizada correctamente' : '✅ Película creada correctamente';
+                    mostrarMensaje(mensaje);
+                    
+                    // Recargar la lista completa
+                    await cargarPeliculas();
+                    limpiarFormularioPeliculas();
+                    
+                } else {
+                    const errorText = await response.text();
+                    throw new Error(errorText || 'Error en la respuesta del servidor');
+                }
+                
+            } catch (error) {
+                console.error('Error:', error);
+                mostrarMensaje('❌ Error al guardar película: ' + error.message, 'error');
+            }
+        });
+
+        // ========== CRUD INVENTARIO ==========
+        document.getElementById('inventario-form').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            if (!validarFormularioInventario()) {
+                return;
+            }
+
+            const inventarioData = {
+                cantidad_disponible: parseInt(document.getElementById('cantidad-disponible').value),
+                id_pelicula: parseInt(document.getElementById('id-pelicula-inv').value),
+                id_tienda: parseInt(document.getElementById('id-tienda-inv').value)
+            };
+
+            const inventarioId = document.getElementById('inventario-id').value;
+            const esEdicion = !!inventarioId;
+
+            try {
+                mostrarMensaje(esEdicion ? 'Actualizando inventario...' : 'Creando inventario...');
+                
+                let response;
+                if (esEdicion) {
+                    // Actualizar inventario existente
+                    response = await fetch(`${API_BASE}/inventario/update/${inventarioId}`, {
+                        method: 'PUT',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify(inventarioData)
+                    });
+                } else {
+                    // Crear nuevo inventario
+                    response = await fetch(`${API_BASE}/inventario/add`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify(inventarioData)
+                    });
+                }
+
+                if (response.ok) {
+                    const mensaje = esEdicion ? '✅ Inventario actualizado correctamente' : '✅ Inventario creado correctamente';
+                    mostrarMensaje(mensaje);
+                    
+                    // Recargar la lista completa
+                    await cargarInventario();
+                    limpiarFormularioInventario();
+                    
+                } else {
+                    const errorText = await response.text();
+                    throw new Error(errorText || 'Error en la respuesta del servidor');
+                }
+                
+            } catch (error) {
+                console.error('Error:', error);
+                mostrarMensaje('❌ Error al guardar inventario: ' + error.message, 'error');
+            }
+        });
+
+        // ========== CRUD FACTURAS ==========
+        document.getElementById('factura-form').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            if (!validarFormularioFacturas()) {
+                return;
+            }
+
+            const facturaData = {
+                fecha_factura: document.getElementById('fecha-factura').value,
+                total_factura: document.getElementById('total-factura').value ? 
+                    parseInt(document.getElementById('total-factura').value) : null,
+                cedula_cliente: parseInt(document.getElementById('id-cliente').value),
+                id_tienda: parseInt(document.getElementById('id-tienda').value)
+            };
+
+            const facturaId = document.getElementById('factura-id').value;
+            const esEdicion = !!facturaId;
+
+            try {
+                mostrarMensaje(esEdicion ? 'Actualizando factura...' : 'Creando factura...');
+                
+                let response;
+                if (esEdicion) {
+                    // Actualizar factura existente
+                    response = await fetch(`${API_BASE}/factura/update/${facturaId}`, {
+                        method: 'PUT',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify(facturaData)
+                    });
+                } else {
+                    // Crear nueva factura
+                    response = await fetch(`${API_BASE}/factura/add`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify(facturaData)
+                    });
+                }
+
+                if (response.ok) {
+                    const mensaje = esEdicion ? '✅ Factura actualizada correctamente' : '✅ Factura creada correctamente';
+                    mostrarMensaje(mensaje);
+                    
+                    // Recargar la lista completa
+                    await cargarFacturas();
+                    limpiarFormularioFacturas();
+                    
+                } else {
+                    const errorText = await response.text();
+                    throw new Error(errorText || 'Error en la respuesta del servidor');
+                }
+                
+            } catch (error) {
+                console.error('Error:', error);
+                mostrarMensaje('❌ Error al guardar factura: ' + error.message, 'error');
+            }
+        });
+
+        // ========== CRUD DETALLES FACTURA ==========
+        document.getElementById('detalles-form').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            if (!validarFormularioDetalles()) {
+                return;
+            }
+
+            const detalleData = {
+                id_pelicula: parseInt(document.getElementById('id-pelicula').value),
+                id_factura: parseInt(document.getElementById('id-factura').value)
+            };
+
+            const detalleId = document.getElementById('detalle-id').value;
+            const esEdicion = !!detalleId;
+
+            try {
+                mostrarMensaje(esEdicion ? 'Actualizando detalle...' : 'Creando detalle...');
+                
+                let response;
+                if (esEdicion) {
+                    // Actualizar detalle existente
+                    response = await fetch(`${API_BASE}/detalles/update/${detalleId}`, {
+                        method: 'PUT',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify(detalleData)
+                    });
+                } else {
+                    // Crear nuevo detalle
+                    response = await fetch(`${API_BASE}/detalles/add`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify(detalleData)
+                    });
+                }
+
+                if (response.ok) {
+                    const mensaje = esEdicion ? '✅ Detalle actualizado correctamente' : '✅ Detalle creado correctamente';
+                    mostrarMensaje(mensaje);
+                    
+                    // Recargar la lista completa
+                    await cargarDetallesFactura();
+                    limpiarFormularioDetalles();
+                    
+                } else {
+                    const errorText = await response.text();
+                    throw new Error(errorText || 'Error en la respuesta del servidor');
+                }
+                
+            } catch (error) {
+                console.error('Error:', error);
+                mostrarMensaje('❌ Error al guardar detalle: ' + error.message, 'error');
+            }
+        });
+
+        // ========== CRUD PROVINCIAS ==========
+        document.getElementById('provincia-form').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            if (!validarFormularioProvincias()) {
+                return;
+            }
+
+            const provinciaData = {
+                nombre_provincia: document.getElementById('nombre-provincia').value.trim()
+            };
+
+            const provinciaId = document.getElementById('provincia-id').value;
+            const esEdicion = !!provinciaId;
+
+            try {
+                mostrarMensaje(esEdicion ? 'Actualizando provincia...' : 'Creando provincia...');
+                
+                let response;
+                if (esEdicion) {
+                    // Actualizar provincia existente
+                    response = await fetch(`${API_BASE}/provincia/update/${provinciaId}`, {
+                        method: 'PUT',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify(provinciaData)
+                    });
+                } else {
+                    // Crear nueva provincia
+                    response = await fetch(`${API_BASE}/provincia/add`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify(provinciaData)
+                    });
+                }
+
+                if (response.ok) {
+                    const mensaje = esEdicion ? '✅ Provincia actualizada correctamente' : '✅ Provincia creada correctamente';
+                    mostrarMensaje(mensaje);
+                    
+                    // Recargar la lista completa
+                    await cargarProvincias();
+                    limpiarFormularioProvincias();
+                    
+                } else {
+                    const errorText = await response.text();
+                    throw new Error(errorText || 'Error en la respuesta del servidor');
+                }
+                
+            } catch (error) {
+                console.error('Error:', error);
+                mostrarMensaje('❌ Error al guardar provincia: ' + error.message, 'error');
+            }
+        });
+
+        // ========== CRUD TIENDAS ==========
+        document.getElementById('tienda-form').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            if (!validarFormularioTiendas()) {
+                return;
+            }
+
+            const tiendaData = {
+                nombre_tienda: document.getElementById('nombre-tienda').value.trim(),
+                direccion_exacta: document.getElementById('direccion-tienda').value.trim() || null,
+                telefono_tienda: parseInt(document.getElementById('telefono-tienda').value),
+                email_tienda: document.getElementById('email-tienda').value.trim(),
+                id_provincia: parseInt(document.getElementById('id-provincia-tienda').value)
+            };
+
+            const tiendaId = document.getElementById('tienda-id').value;
+            const esEdicion = !!tiendaId;
+
+            try {
+                mostrarMensaje(esEdicion ? 'Actualizando tienda...' : 'Creando tienda...');
+                
+                let response;
+                if (esEdicion) {
+                    // Actualizar tienda existente
+                    response = await fetch(`${API_BASE}/tienda/update/${tiendaId}`, {
+                        method: 'PUT',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify(tiendaData)
+                    });
+                } else {
+                    // Crear nueva tienda
+                    response = await fetch(`${API_BASE}/tienda/add`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify(tiendaData)
+                    });
+                }
+
+                if (response.ok) {
+                    const mensaje = esEdicion ? '✅ Tienda actualizada correctamente' : '✅ Tienda creada correctamente';
+                    mostrarMensaje(mensaje);
+                    
+                    // Recargar la lista completa
+                    await cargarTiendas();
+                    limpiarFormularioTiendas();
+                    
+                } else {
+                    const errorText = await response.text();
+                    throw new Error(errorText || 'Error en la respuesta del servidor');
+                }
+                
+            } catch (error) {
+                console.error('Error:', error);
+                mostrarMensaje('❌ Error al guardar tienda: ' + error.message, 'error');
+            }
+        });
+
+        // ========== FUNCIONES CLIENTES ==========
+        async function cargarClientes() {
+            const tbody = document.getElementById('clientes-tbody');
+            const loading = document.getElementById('loading-clientes');
+            const noData = document.getElementById('no-clientes');
+            
+            try {
+                loading.style.display = 'block';
+                noData.style.display = 'none';
+                tbody.innerHTML = '<tr><td colspan="7" style="text-align: center;">🔄 Cargando...</td></tr>';
+
+                const response = await fetch(`${API_BASE}/cliente/readAll`);
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+                
+                const clientes = await response.json();
+                
+                // Guardar clientes en variable global
+                clientesGlobal = clientes || [];
+                
+                loading.style.display = 'none';
+                
+                if (!clientes || clientes.length === 0) {
+                    noData.style.display = 'block';
+                    tbody.innerHTML = '';
+                    document.getElementById('contador-clientes').textContent = '0 clientes';
+                    return;
+                }
+
+                actualizarTablaClientes(clientes);
+                
+            } catch (error) {
+                console.error('Error cargando clientes:', error);
+                loading.style.display = 'none';
+                tbody.innerHTML = '<tr><td colspan="7" style="text-align: center; color: #e74c3c;">❌ Error al cargar clientes: ' + error.message + '</td></tr>';
+                mostrarMensaje('❌ Error al cargar clientes: ' + error.message, 'error');
+            }
+        }
+
+        // Función para actualizar la tabla con los clientes
+        function actualizarTablaClientes(clientes) {
+            const tbody = document.getElementById('clientes-tbody');
+            
+            document.getElementById('contador-clientes').textContent = `${clientes.length} cliente${clientes.length !== 1 ? 's' : ''}`;
+            tbody.innerHTML = '';
+            
+            clientes.forEach(cliente => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td>${cliente.cedula || 'N/A'}</td>
+                    <td><strong>${cliente.nombre || 'Sin nombre'}</strong></td>
+                    <td>${cliente.primer_apellido || 'N/A'}</td>
+                    <td>${cliente.segundo_apellido || 'N/A'}</td>
+                    <td>${cliente.email || 'Sin email'}</td>
+                    <td>${cliente.numero_telefono || 'N/A'}</td>
+                    <td class="action-buttons">
+                        <button class="btn btn-warning btn-sm" onclick="editarCliente(${cliente.cedula})">
+                            ✏️ Editar
+                        </button>
+                        <button class="btn btn-danger btn-sm" onclick="eliminarCliente(${cliente.cedula})">
+                            🗑️ Eliminar
+                        </button>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        async function editarCliente(cedula) {
+            try {
+                mostrarMensaje('Cargando datos del cliente...');
+                
+                const response = await fetch(`${API_BASE}/cliente/readById/${cedula}`);
+                
+                if (!response.ok) {
+                    throw new Error('Error al cargar cliente para editar');
+                }
+                
+                const cliente = await response.json();
+                
+                if (!cliente) {
+                    throw new Error('Cliente no encontrado');
+                }
+                
+                // Llenar formulario con datos del cliente
+                document.getElementById('cliente-id').value = cliente.cedula;
+                document.getElementById('cedula').value = cliente.cedula || '';
+                document.getElementById('nombre').value = cliente.nombre || '';
+                document.getElementById('primer-apellido').value = cliente.primer_apellido || '';
+                document.getElementById('segundo-apellido').value = cliente.segundo_apellido || '';
+                document.getElementById('email').value = cliente.email || '';
+                document.getElementById('telefono').value = cliente.numero_telefono || '';
+                
+                // Cambiar título del formulario
+                document.getElementById('form-title').textContent = '✏️ Editar Cliente';
+                
+                // Scroll to form
+                document.getElementById('cliente-form').scrollIntoView({ 
+                    behavior: 'smooth',
+                    block: 'start'
+                });
+                
+                mostrarMensaje('✅ Formulario listo para editar cliente');
+                
+            } catch (error) {
+                console.error('Error:', error);
+                mostrarMensaje('❌ Error al cargar cliente para editar: ' + error.message, 'error');
+            }
+        }
+
+        async function eliminarCliente(cedula) {
+            if (!confirm(`¿Está seguro de que desea eliminar el cliente con cédula ${cedula}? Esta acción no se puede deshacer.`)) {
+                return;
+            }
+
+            try {
+                const response = await fetch(`${API_BASE}/cliente/delete/${cedula}`, {
+                    method: 'DELETE'
+                });
+
+                if (response.ok) {
+                    mostrarMensaje('✅ Cliente eliminado correctamente');
+                    
+                    // Actualizar la lista inmediatamente sin recargar
+                    // Filtrar el cliente eliminado de la lista global
+                    clientesGlobal = clientesGlobal.filter(cliente => cliente.cedula !== cedula);
+                    actualizarTablaClientes(clientesGlobal);
+                } else {
+                    throw new Error('Error al eliminar cliente');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                mostrarMensaje('❌ Error al eliminar cliente: ' + error.message, 'error');
+            }
+        }
+
+        function limpiarFormulario() {
+            document.getElementById('cliente-form').reset();
+            document.getElementById('cliente-id').value = '';
+            document.getElementById('form-title').textContent = '➕ Agregar Cliente';
+            
+            // Limpiar errores
+            document.querySelectorAll('.error-message').forEach(error => {
+                error.textContent = '';
+            });
+            document.querySelectorAll('.form-control').forEach(input => {
+                input.classList.remove('error');
+            });
+        }
+
+        function filtrarClientes() {
+            const term = document.getElementById('buscar-clientes').value.toLowerCase();
+            
+            if (!term) {
+                // Si no hay término de búsqueda, mostrar todos los clientes
+                actualizarTablaClientes(clientesGlobal);
+                return;
+            }
+            
+            // Filtrar clientes según el término de búsqueda
+            const clientesFiltrados = clientesGlobal.filter(cliente => {
+                const cedula = cliente.cedula?.toString() || '';
+                const nombre = cliente.nombre?.toLowerCase() || '';
+                const primerApellido = cliente.primer_apellido?.toLowerCase() || '';
+                const email = cliente.email?.toLowerCase() || '';
+                
+                return cedula.includes(term) || 
+                       nombre.includes(term) || 
+                       primerApellido.includes(term) ||
+                       email.includes(term);
+            });
+            
+            actualizarTablaClientes(clientesFiltrados);
+        }
+
+        // ========== FUNCIONES GÉNEROS ==========
+        async function cargarGeneros() {
+            const tbody = document.getElementById('generos-tbody');
+            const loading = document.getElementById('loading-generos');
+            const noData = document.getElementById('no-generos');
+            
+            try {
+                loading.style.display = 'block';
+                noData.style.display = 'none';
+                tbody.innerHTML = '<tr><td colspan="3" style="text-align: center;">🔄 Cargando...</td></tr>';
+
+                const response = await fetch(`${API_BASE}/genero/readAll`);
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+                
+                const generos = await response.json();
+                
+                // Guardar géneros en variable global
+                generosGlobal = generos || [];
+                
+                loading.style.display = 'none';
+                
+                if (!generos || generos.length === 0) {
+                    noData.style.display = 'block';
+                    tbody.innerHTML = '';
+                    document.getElementById('contador-generos').textContent = '0 géneros';
+                    return;
+                }
+
+                actualizarTablaGeneros(generos);
+                
+            } catch (error) {
+                console.error('Error cargando géneros:', error);
+                loading.style.display = 'none';
+                tbody.innerHTML = '<tr><td colspan="3" style="text-align: center; color: #e74c3c;">❌ Error al cargar géneros: ' + error.message + '</td></tr>';
+                mostrarMensaje('❌ Error al cargar géneros: ' + error.message, 'error');
+            }
+        }
+
+        // Función para actualizar la tabla con los géneros
+        function actualizarTablaGeneros(generos) {
+            const tbody = document.getElementById('generos-tbody');
+            
+            document.getElementById('contador-generos').textContent = `${generos.length} género${generos.length !== 1 ? 's' : ''}`;
+            tbody.innerHTML = '';
+            
+            generos.forEach(genero => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td>${genero.id_genero || 'N/A'}</td>
+                    <td><strong>${genero.nombre_genero || 'Sin nombre'}</strong></td>
+                    <td class="action-buttons">
+                        <button class="btn btn-warning btn-sm" onclick="editarGenero(${genero.id_genero})">
+                            ✏️ Editar
+                        </button>
+                        <button class="btn btn-danger btn-sm" onclick="eliminarGenero(${genero.id_genero})">
+                            🗑️ Eliminar
+                        </button>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        async function editarGenero(id) {
+            try {
+                mostrarMensaje('Cargando datos del género...');
+                
+                const response = await fetch(`${API_BASE}/genero/readById/${id}`);
+                
+                if (!response.ok) {
+                    throw new Error('Error al cargar género para editar');
+                }
+                
+                const genero = await response.json();
+                
+                if (!genero) {
+                    throw new Error('Género no encontrado');
+                }
+                
+                // Llenar formulario con datos del género
+                document.getElementById('genero-id').value = genero.id_genero;
+                document.getElementById('nombre-genero').value = genero.nombre_genero || '';
+                
+                // Cambiar título del formulario
+                document.getElementById('form-title-generos').textContent = '✏️ Editar Género';
+                
+                // Scroll to form
+                document.getElementById('genero-form').scrollIntoView({ 
+                    behavior: 'smooth',
+                    block: 'start'
+                });
+                
+                mostrarMensaje('✅ Formulario listo para editar género');
+                
+            } catch (error) {
+                console.error('Error:', error);
+                mostrarMensaje('❌ Error al cargar género para editar: ' + error.message, 'error');
+            }
+        }
+
+        async function eliminarGenero(id) {
+            if (!confirm(`¿Está seguro de que desea eliminar el género con ID ${id}? Esta acción no se puede deshacer.`)) {
+                return;
+            }
+
+            try {
+                const response = await fetch(`${API_BASE}/genero/delete/${id}`, {
+                    method: 'DELETE'
+                });
+
+                if (response.ok) {
+                    mostrarMensaje('✅ Género eliminado correctamente');
+                    
+                    // Actualizar la lista inmediatamente sin recargar
+                    // Filtrar el género eliminado de la lista global
+                    generosGlobal = generosGlobal.filter(genero => genero.id_genero !== id);
+                    actualizarTablaGeneros(generosGlobal);
+                } else {
+                    throw new Error('Error al eliminar género');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                mostrarMensaje('❌ Error al eliminar género: ' + error.message, 'error');
+            }
+        }
+
+        function limpiarFormularioGeneros() {
+            document.getElementById('genero-form').reset();
+            document.getElementById('genero-id').value = '';
+            document.getElementById('form-title-generos').textContent = '➕ Agregar Género';
+            
+            // Limpiar errores
+            document.querySelectorAll('.error-message').forEach(error => {
+                error.textContent = '';
+            });
+            document.querySelectorAll('.form-control').forEach(input => {
+                input.classList.remove('error');
+            });
+        }
+
+        function filtrarGeneros() {
+            const term = document.getElementById('buscar-generos').value.toLowerCase();
+            
+            if (!term) {
+                // Si no hay término de búsqueda, mostrar todos los géneros
+                actualizarTablaGeneros(generosGlobal);
+                return;
+            }
+            
+            // Filtrar géneros según el término de búsqueda
+            const generosFiltrados = generosGlobal.filter(genero => {
+                const idGenero = genero.id_genero?.toString() || '';
+                const nombre = genero.nombre_genero?.toLowerCase() || '';
+                
+                return idGenero.includes(term) || 
+                       nombre.includes(term);
+            });
+            
+            actualizarTablaGeneros(generosFiltrados);
+        }
+
+        // ========== FUNCIONES PELÍCULAS ==========
+        async function cargarPeliculas() {
+            const tbody = document.getElementById('peliculas-tbody');
+            const loading = document.getElementById('loading-peliculas');
+            const noData = document.getElementById('no-peliculas');
+            
+            try {
+                loading.style.display = 'block';
+                noData.style.display = 'none';
+                tbody.innerHTML = '<tr><td colspan="6" style="text-align: center;">🔄 Cargando...</td></tr>';
+
+                const response = await fetch(`${API_BASE}/pelicula/readAll`);
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+                
+                const peliculas = await response.json();
+                
+                // Guardar películas en variable global
+                peliculasGlobal = peliculas || [];
+                
+                loading.style.display = 'none';
+                
+                if (!peliculas || peliculas.length === 0) {
+                    noData.style.display = 'block';
+                    tbody.innerHTML = '';
+                    document.getElementById('contador-peliculas').textContent = '0 películas';
+                    return;
+                }
+
+                actualizarTablaPeliculas(peliculas);
+                
+            } catch (error) {
+                console.error('Error cargando películas:', error);
+                loading.style.display = 'none';
+                tbody.innerHTML = '<tr><td colspan="6" style="text-align: center; color: #e74c3c;">❌ Error al cargar películas: ' + error.message + '</td></tr>';
+                mostrarMensaje('❌ Error al cargar películas: ' + error.message, 'error');
+            }
+        }
+
+        // Función para actualizar la tabla con las películas
+        function actualizarTablaPeliculas(peliculas) {
+            const tbody = document.getElementById('peliculas-tbody');
+            
+            document.getElementById('contador-peliculas').textContent = `${peliculas.length} película${peliculas.length !== 1 ? 's' : ''}`;
+            tbody.innerHTML = '';
+            
+            peliculas.forEach(pelicula => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td>${pelicula.id_pelicula || 'N/A'}</td>
+                    <td><strong>${pelicula.nombre_pelicula || 'Sin nombre'}</strong></td>
+                    <td>${pelicula.idioma || 'N/A'}</td>
+                    <td>${pelicula.precio_venta ? '$' + pelicula.precio_venta.toLocaleString() : 'N/A'}</td>
+                    <td>${pelicula.id_genero || pelicula.genero?.id_genero || 'N/A'}</td>
+                    <td class="action-buttons">
+                        <button class="btn btn-warning btn-sm" onclick="editarPelicula(${pelicula.id_pelicula})">
+                            ✏️ Editar
+                        </button>
+                        <button class="btn btn-danger btn-sm" onclick="eliminarPelicula(${pelicula.id_pelicula})">
+                            🗑️ Eliminar
+                        </button>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        async function editarPelicula(id) {
+            try {
+                mostrarMensaje('Cargando datos de la película...');
+                
+                const response = await fetch(`${API_BASE}/pelicula/readById/${id}`);
+                
+                if (!response.ok) {
+                    throw new Error('Error al cargar película para editar');
+                }
+                
+                const pelicula = await response.json();
+                
+                if (!pelicula) {
+                    throw new Error('Película no encontrada');
+                }
+                
+                // Llenar formulario con datos de la película
+                document.getElementById('pelicula-id').value = pelicula.id_pelicula;
+                document.getElementById('nombre-pelicula').value = pelicula.nombre_pelicula || '';
+                document.getElementById('idioma').value = pelicula.idioma || '';
+                document.getElementById('precio-venta').value = pelicula.precio_venta || '';
+                document.getElementById('id-genero-peli').value = pelicula.id_genero || pelicula.genero?.id_genero || '';
+                
+                // Cambiar título del formulario
+                document.getElementById('form-title-peliculas').textContent = '✏️ Editar Película';
+                
+                // Scroll to form
+                document.getElementById('pelicula-form').scrollIntoView({ 
+                    behavior: 'smooth',
+                    block: 'start'
+                });
+                
+                mostrarMensaje('✅ Formulario listo para editar película');
+                
+            } catch (error) {
+                console.error('Error:', error);
+                mostrarMensaje('❌ Error al cargar película para editar: ' + error.message, 'error');
+            }
+        }
+
+        async function eliminarPelicula(id) {
+            if (!confirm(`¿Está seguro de que desea eliminar la película con ID ${id}? Esta acción no se puede deshacer.`)) {
+                return;
+            }
+
+            try {
+                const response = await fetch(`${API_BASE}/pelicula/delete/${id}`, {
+                    method: 'DELETE'
+                });
+
+                if (response.ok) {
+                    mostrarMensaje('✅ Película eliminada correctamente');
+                    
+                    // Actualizar la lista inmediatamente sin recargar
+                    // Filtrar la película eliminada de la lista global
+                    peliculasGlobal = peliculasGlobal.filter(pelicula => pelicula.id_pelicula !== id);
+                    actualizarTablaPeliculas(peliculasGlobal);
+                } else {
+                    throw new Error('Error al eliminar película');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                mostrarMensaje('❌ Error al eliminar película: ' + error.message, 'error');
+            }
+        }
+
+        function limpiarFormularioPeliculas() {
+            document.getElementById('pelicula-form').reset();
+            document.getElementById('pelicula-id').value = '';
+            document.getElementById('form-title-peliculas').textContent = '➕ Agregar Película';
+            
+            // Limpiar errores
+            document.querySelectorAll('.error-message').forEach(error => {
+                error.textContent = '';
+            });
+            document.querySelectorAll('.form-control').forEach(input => {
+                input.classList.remove('error');
+            });
+        }
+
+        function filtrarPeliculas() {
+            const term = document.getElementById('buscar-peliculas').value.toLowerCase();
+            
+            if (!term) {
+                // Si no hay término de búsqueda, mostrar todas las películas
+                actualizarTablaPeliculas(peliculasGlobal);
+                return;
+            }
+            
+            // Filtrar películas según el término de búsqueda
+            const peliculasFiltradas = peliculasGlobal.filter(pelicula => {
+                const idPelicula = pelicula.id_pelicula?.toString() || '';
+                const nombre = pelicula.nombre_pelicula?.toLowerCase() || '';
+                const idioma = pelicula.idioma?.toLowerCase() || '';
+                const precio = pelicula.precio_venta?.toString() || '';
+                const idGenero = (pelicula.id_genero || pelicula.genero?.id_genero)?.toString() || '';
+                
+                return idPelicula.includes(term) || 
+                       nombre.includes(term) || 
+                       idioma.includes(term) ||
+                       precio.includes(term) ||
+                       idGenero.includes(term);
+            });
+            
+            actualizarTablaPeliculas(peliculasFiltradas);
+        }
+
+        // ========== FUNCIONES INVENTARIO ==========
+        async function cargarInventario() {
+            const tbody = document.getElementById('inventario-tbody');
+            const loading = document.getElementById('loading-inventario');
+            const noData = document.getElementById('no-inventario');
+            
+            try {
+                loading.style.display = 'block';
+                noData.style.display = 'none';
+                tbody.innerHTML = '<tr><td colspan="5" style="text-align: center;">🔄 Cargando...</td></tr>';
+
+                const response = await fetch(`${API_BASE}/inventario/readAll`);
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+                
+                const inventario = await response.json();
+                
+                // Guardar inventario en variable global
+                inventarioGlobal = inventario || [];
+                
+                loading.style.display = 'none';
+                
+                if (!inventario || inventario.length === 0) {
+                    noData.style.display = 'block';
+                    tbody.innerHTML = '';
+                    document.getElementById('contador-inventario').textContent = '0 registros';
+                    return;
+                }
+
+                actualizarTablaInventario(inventario);
+                
+            } catch (error) {
+                console.error('Error cargando inventario:', error);
+                loading.style.display = 'none';
+                tbody.innerHTML = '<tr><td colspan="5" style="text-align: center; color: #e74c3c;">❌ Error al cargar inventario: ' + error.message + '</td></tr>';
+                mostrarMensaje('❌ Error al cargar inventario: ' + error.message, 'error');
+            }
+        }
+
+        // Función para actualizar la tabla con el inventario
+        function actualizarTablaInventario(inventario) {
+            const tbody = document.getElementById('inventario-tbody');
+            
+            document.getElementById('contador-inventario').textContent = `${inventario.length} registro${inventario.length !== 1 ? 's' : ''}`;
+            tbody.innerHTML = '';
+            
+            inventario.forEach(inv => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td>${inv.id_inventario || 'N/A'}</td>
+                    <td><strong>${inv.cantidad_disponible || '0'}</strong></td>
+                    <td>${inv.id_pelicula || inv.pelicula?.id_pelicula || 'N/A'}</td>
+                    <td>${inv.id_tienda || inv.tienda?.id_tienda || 'N/A'}</td>
+                    <td class="action-buttons">
+                        <button class="btn btn-warning btn-sm" onclick="editarInventario(${inv.id_inventario})">
+                            ✏️ Editar
+                        </button>
+                        <button class="btn btn-danger btn-sm" onclick="eliminarInventario(${inv.id_inventario})">
+                            🗑️ Eliminar
+                        </button>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        async function editarInventario(id) {
+            try {
+                mostrarMensaje('Cargando datos del inventario...');
+                
+                const response = await fetch(`${API_BASE}/inventario/readById/${id}`);
+                
+                if (!response.ok) {
+                    throw new Error('Error al cargar inventario para editar');
+                }
+                
+                const inventario = await response.json();
+                
+                if (!inventario) {
+                    throw new Error('Inventario no encontrado');
+                }
+                
+                // Llenar formulario con datos del inventario
+                document.getElementById('inventario-id').value = inventario.id_inventario;
+                document.getElementById('cantidad-disponible').value = inventario.cantidad_disponible || '';
+                document.getElementById('id-pelicula-inv').value = inventario.id_pelicula || inventario.pelicula?.id_pelicula || '';
+                document.getElementById('id-tienda-inv').value = inventario.id_tienda || inventario.tienda?.id_tienda || '';
+                
+                // Cambiar título del formulario
+                document.getElementById('form-title-inventario').textContent = '✏️ Editar Inventario';
+                
+                // Scroll to form
+                document.getElementById('inventario-form').scrollIntoView({ 
+                    behavior: 'smooth',
+                    block: 'start'
+                });
+                
+                mostrarMensaje('✅ Formulario listo para editar inventario');
+                
+            } catch (error) {
+                console.error('Error:', error);
+                mostrarMensaje('❌ Error al cargar inventario para editar: ' + error.message, 'error');
+            }
+        }
+
+        async function eliminarInventario(id) {
+            if (!confirm(`¿Está seguro de que desea eliminar el registro de inventario con ID ${id}? Esta acción no se puede deshacer.`)) {
+                return;
+            }
+
+            try {
+                const response = await fetch(`${API_BASE}/inventario/delete/${id}`, {
+                    method: 'DELETE'
+                });
+
+                if (response.ok) {
+                    mostrarMensaje('✅ Registro de inventario eliminado correctamente');
+                    
+                    // Actualizar la lista inmediatamente sin recargar
+                    // Filtrar el registro eliminado de la lista global
+                    inventarioGlobal = inventarioGlobal.filter(inv => inv.id_inventario !== id);
+                    actualizarTablaInventario(inventarioGlobal);
+                } else {
+                    throw new Error('Error al eliminar inventario');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                mostrarMensaje('❌ Error al eliminar inventario: ' + error.message, 'error');
+            }
+        }
+
+        function limpiarFormularioInventario() {
+            document.getElementById('inventario-form').reset();
+            document.getElementById('inventario-id').value = '';
+            document.getElementById('form-title-inventario').textContent = '➕ Agregar al Inventario';
+            
+            // Limpiar errores
+            document.querySelectorAll('.error-message').forEach(error => {
+                error.textContent = '';
+            });
+            document.querySelectorAll('.form-control').forEach(input => {
+                input.classList.remove('error');
+            });
+        }
+
+        function filtrarInventario() {
+            const term = document.getElementById('buscar-inventario').value.toLowerCase();
+            
+            if (!term) {
+                // Si no hay término de búsqueda, mostrar todo el inventario
+                actualizarTablaInventario(inventarioGlobal);
+                return;
+            }
+            
+            // Filtrar inventario según el término de búsqueda
+            const inventarioFiltrado = inventarioGlobal.filter(inv => {
+                const idInventario = inv.id_inventario?.toString() || '';
+                const cantidad = inv.cantidad_disponible?.toString() || '';
+                const idPelicula = (inv.id_pelicula || inv.pelicula?.id_pelicula)?.toString() || '';
+                const idTienda = (inv.id_tienda || inv.tienda?.id_tienda)?.toString() || '';
+                
+                return idInventario.includes(term) || 
+                       cantidad.includes(term) || 
+                       idPelicula.includes(term) ||
+                       idTienda.includes(term);
+            });
+            
+            actualizarTablaInventario(inventarioFiltrado);
+        }
+
+        // ========== FUNCIONES FACTURAS ==========
+        async function cargarFacturas() {
+            const tbody = document.getElementById('facturas-tbody');
+            const loading = document.getElementById('loading-facturas');
+            const noData = document.getElementById('no-facturas');
+            
+            try {
+                loading.style.display = 'block';
+                noData.style.display = 'none';
+                tbody.innerHTML = '<tr><td colspan="6" style="text-align: center;">🔄 Cargando...</td></tr>';
+
+                const response = await fetch(`${API_BASE}/factura/readAll`);
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+                
+                const facturas = await response.json();
+                
+                // Guardar facturas en variable global
+                facturasGlobal = facturas || [];
+                
+                loading.style.display = 'none';
+                
+                if (!facturas || facturas.length === 0) {
+                    noData.style.display = 'block';
+                    tbody.innerHTML = '';
+                    document.getElementById('contador-facturas').textContent = '0 facturas';
+                    return;
+                }
+
+                actualizarTablaFacturas(facturas);
+                
+            } catch (error) {
+                console.error('Error cargando facturas:', error);
+                loading.style.display = 'none';
+                tbody.innerHTML = '<tr><td colspan="6" style="text-align: center; color: #e74c3c;">❌ Error al cargar facturas: ' + error.message + '</td></tr>';
+                mostrarMensaje('❌ Error al cargar facturas: ' + error.message, 'error');
+            }
+        }
+
+        // Función para actualizar la tabla con las facturas
+        function actualizarTablaFacturas(facturas) {
+            const tbody = document.getElementById('facturas-tbody');
+            
+            document.getElementById('contador-facturas').textContent = `${facturas.length} factura${facturas.length !== 1 ? 's' : ''}`;
+            tbody.innerHTML = '';
+            
+            facturas.forEach(factura => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td>${factura.id_factura || 'N/A'}</td>
+                    <td>${factura.fecha_factura || 'N/A'}</td>
+                    <td>${factura.total_factura ? '$' + factura.total_factura.toLocaleString() : 'N/A'}</td>
+                    <td>${factura.cedula_cliente || factura.cliente?.cedula || 'N/A'}</td>
+                    <td>${factura.id_tienda || factura.tienda?.id_tienda || 'N/A'}</td>
+                    <td class="action-buttons">
+                        <button class="btn btn-warning btn-sm" onclick="editarFactura(${factura.id_factura})">
+                            ✏️ Editar
+                        </button>
+                        <button class="btn btn-danger btn-sm" onclick="eliminarFactura(${factura.id_factura})">
+                            🗑️ Eliminar
+                        </button>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        async function editarFactura(id) {
+            try {
+                mostrarMensaje('Cargando datos de la factura...');
+                
+                const response = await fetch(`${API_BASE}/factura/readById/${id}`);
+                
+                if (!response.ok) {
+                    throw new Error('Error al cargar factura para editar');
+                }
+                
+                const factura = await response.json();
+                
+                if (!factura) {
+                    throw new Error('Factura no encontrada');
+                }
+                
+                // Llenar formulario con datos de la factura
+                document.getElementById('factura-id').value = factura.id_factura;
+                document.getElementById('fecha-factura').value = factura.fecha_factura || '';
+                document.getElementById('total-factura').value = factura.total_factura || '';
+                document.getElementById('id-cliente').value = factura.cedula_cliente || factura.cliente?.cedula || '';
+                document.getElementById('id-tienda').value = factura.id_tienda || factura.tienda?.id_tienda || '';
+                
+                // Cambiar título del formulario
+                document.getElementById('form-title-facturas').textContent = '✏️ Editar Factura';
+                
+                // Scroll to form
+                document.getElementById('factura-form').scrollIntoView({ 
+                    behavior: 'smooth',
+                    block: 'start'
+                });
+                
+                mostrarMensaje('✅ Formulario listo para editar factura');
+                
+            } catch (error) {
+                console.error('Error:', error);
+                mostrarMensaje('❌ Error al cargar factura para editar: ' + error.message, 'error');
+            }
+        }
+
+        async function eliminarFactura(id) {
+            if (!confirm(`¿Está seguro de que desea eliminar la factura con ID ${id}? Esta acción no se puede deshacer.`)) {
+                return;
+            }
+
+            try {
+                const response = await fetch(`${API_BASE}/factura/delete/${id}`, {
+                    method: 'DELETE'
+                });
+
+                if (response.ok) {
+                    mostrarMensaje('✅ Factura eliminada correctamente');
+                    
+                    // Actualizar la lista inmediatamente sin recargar
+                    // Filtrar la factura eliminada de la lista global
+                    facturasGlobal = facturasGlobal.filter(factura => factura.id_factura !== id);
+                    actualizarTablaFacturas(facturasGlobal);
+                } else {
+                    throw new Error('Error al eliminar factura');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                mostrarMensaje('❌ Error al eliminar factura: ' + error.message, 'error');
+            }
+        }
+
+        function limpiarFormularioFacturas() {
+            document.getElementById('factura-form').reset();
+            document.getElementById('factura-id').value = '';
+            document.getElementById('form-title-facturas').textContent = '➕ Agregar Factura';
+            
+            // Limpiar errores
+            document.querySelectorAll('.error-message').forEach(error => {
+                error.textContent = '';
+            });
+            document.querySelectorAll('.form-control').forEach(input => {
+                input.classList.remove('error');
+            });
+        }
+
+        function filtrarFacturas() {
+            const term = document.getElementById('buscar-facturas').value.toLowerCase();
+            
+            if (!term) {
+                // Si no hay término de búsqueda, mostrar todas las facturas
+                actualizarTablaFacturas(facturasGlobal);
+                return;
+            }
+            
+            // Filtrar facturas según el término de búsqueda
+            const facturasFiltradas = facturasGlobal.filter(factura => {
+                const idFactura = factura.id_factura?.toString() || '';
+                const fecha = factura.fecha_factura?.toLowerCase() || '';
+                const total = factura.total_factura?.toString() || '';
+                const idCliente = (factura.cedula_cliente || factura.cliente?.cedula)?.toString() || '';
+                const idTienda = (factura.id_tienda || factura.tienda?.id_tienda)?.toString() || '';
+                
+                return idFactura.includes(term) || 
+                       fecha.includes(term) || 
+                       total.includes(term) ||
+                       idCliente.includes(term) ||
+                       idTienda.includes(term);
+            });
+            
+            actualizarTablaFacturas(facturasFiltradas);
+        }
+
+        // ========== FUNCIONES DETALLES FACTURA ==========
+        async function cargarDetallesFactura() {
+            const tbody = document.getElementById('detalles-tbody');
+            const loading = document.getElementById('loading-detalles');
+            const noData = document.getElementById('no-detalles');
+            
+            try {
+                loading.style.display = 'block';
+                noData.style.display = 'none';
+                tbody.innerHTML = '<tr><td colspan="4" style="text-align: center;">🔄 Cargando...</td></tr>';
+
+                const response = await fetch(`${API_BASE}/detalles/readAll`);
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+                
+                const detalles = await response.json();
+                
+                // Guardar detalles en variable global
+                detallesGlobal = detalles || [];
+                
+                loading.style.display = 'none';
+                
+                if (!detalles || detalles.length === 0) {
+                    noData.style.display = 'block';
+                    tbody.innerHTML = '';
+                    document.getElementById('contador-detalles').textContent = '0 detalles';
+                    return;
+                }
+
+                actualizarTablaDetalles(detalles);
+                
+            } catch (error) {
+                console.error('Error cargando detalles:', error);
+                loading.style.display = 'none';
+                tbody.innerHTML = '<tr><td colspan="4" style="text-align: center; color: #e74c3c;">❌ Error al cargar detalles: ' + error.message + '</td></tr>';
+                mostrarMensaje('❌ Error al cargar detalles: ' + error.message, 'error');
+            }
+        }
+
+        // Función para actualizar la tabla con los detalles
+        function actualizarTablaDetalles(detalles) {
+            const tbody = document.getElementById('detalles-tbody');
+            
+            document.getElementById('contador-detalles').textContent = `${detalles.length} detalle${detalles.length !== 1 ? 's' : ''}`;
+            tbody.innerHTML = '';
+            
+            detalles.forEach(detalle => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td>${detalle.id_detalle || 'N/A'}</td>
+                    <td>${detalle.id_pelicula || detalle.pelicula?.id_pelicula || 'N/A'}</td>
+                    <td>${detalle.id_factura || detalle.factura?.id_factura || 'N/A'}</td>
+                    <td class="action-buttons">
+                        <button class="btn btn-warning btn-sm" onclick="editarDetalle(${detalle.id_detalle})">
+                            ✏️ Editar
+                        </button>
+                        <button class="btn btn-danger btn-sm" onclick="eliminarDetalle(${detalle.id_detalle})">
+                            🗑️ Eliminar
+                        </button>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        async function editarDetalle(id) {
+            try {
+                mostrarMensaje('Cargando datos del detalle...');
+                
+                const response = await fetch(`${API_BASE}/detalles/readById/${id}`);
+                
+                if (!response.ok) {
+                    throw new Error('Error al cargar detalle para editar');
+                }
+                
+                const detalle = await response.json();
+                
+                if (!detalle) {
+                    throw new Error('Detalle no encontrado');
+                }
+                
+                // Llenar formulario con datos del detalle
+                document.getElementById('detalle-id').value = detalle.id_detalle;
+                document.getElementById('id-pelicula').value = detalle.id_pelicula || detalle.pelicula?.id_pelicula || '';
+                document.getElementById('id-factura').value = detalle.id_factura || detalle.factura?.id_factura || '';
+                
+                // Cambiar título del formulario
+                document.getElementById('form-title-detalles').textContent = '✏️ Editar Detalle';
+                
+                // Scroll to form
+                document.getElementById('detalles-form').scrollIntoView({ 
+                    behavior: 'smooth',
+                    block: 'start'
+                });
+                
+                mostrarMensaje('✅ Formulario listo para editar detalle');
+                
+            } catch (error) {
+                console.error('Error:', error);
+                mostrarMensaje('❌ Error al cargar detalle para editar: ' + error.message, 'error');
+            }
+        }
+
+        async function eliminarDetalle(id) {
+            if (!confirm(`¿Está seguro de que desea eliminar el detalle con ID ${id}? Esta acción no se puede deshacer.`)) {
+                return;
+            }
+
+            try {
+                const response = await fetch(`${API_BASE}/detalles/delete/${id}`, {
+                    method: 'DELETE'
+                });
+
+                if (response.ok) {
+                    mostrarMensaje('✅ Detalle eliminado correctamente');
+                    
+                    // Actualizar la lista inmediatamente sin recargar
+                    // Filtrar el detalle eliminado de la lista global
+                    detallesGlobal = detallesGlobal.filter(detalle => detalle.id_detalle !== id);
+                    actualizarTablaDetalles(detallesGlobal);
+                } else {
+                    throw new Error('Error al eliminar detalle');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                mostrarMensaje('❌ Error al eliminar detalle: ' + error.message, 'error');
+            }
+        }
+
+        function limpiarFormularioDetalles() {
+            document.getElementById('detalles-form').reset();
+            document.getElementById('detalle-id').value = '';
+            document.getElementById('form-title-detalles').textContent = '➕ Agregar Detalle Factura';
+            
+            // Limpiar errores
+            document.querySelectorAll('.error-message').forEach(error => {
+                error.textContent = '';
+            });
+            document.querySelectorAll('.form-control').forEach(input => {
+                input.classList.remove('error');
+            });
+        }
+
+        function filtrarDetalles() {
+            const term = document.getElementById('buscar-detalles').value.toLowerCase();
+            
+            if (!term) {
+                // Si no hay término de búsqueda, mostrar todos los detalles
+                actualizarTablaDetalles(detallesGlobal);
+                return;
+            }
+            
+            // Filtrar detalles según el término de búsqueda
+            const detallesFiltrados = detallesGlobal.filter(detalle => {
+                const idDetalle = detalle.id_detalle?.toString() || '';
+                const idPelicula = (detalle.id_pelicula || detalle.pelicula?.id_pelicula)?.toString() || '';
+                const idFactura = (detalle.id_factura || detalle.factura?.id_factura)?.toString() || '';
+                
+                return idDetalle.includes(term) || 
+                       idPelicula.includes(term) || 
+                       idFactura.includes(term);
+            });
+            
+            actualizarTablaDetalles(detallesFiltrados);
+        }
+
+        // ========== FUNCIONES PROVINCIAS ==========
+        async function cargarProvincias() {
+            const tbody = document.getElementById('provincias-tbody');
+            const loading = document.getElementById('loading-provincias');
+            const noData = document.getElementById('no-provincias');
+            
+            try {
+                loading.style.display = 'block';
+                noData.style.display = 'none';
+                tbody.innerHTML = '<tr><td colspan="3" style="text-align: center;">🔄 Cargando...</td></tr>';
+
+                const response = await fetch(`${API_BASE}/provincia/readAll`);
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+                
+                const provincias = await response.json();
+                
+                // Guardar provincias en variable global
+                provinciasGlobal = provincias || [];
+                
+                loading.style.display = 'none';
+                
+                if (!provincias || provincias.length === 0) {
+                    noData.style.display = 'block';
+                    tbody.innerHTML = '';
+                    document.getElementById('contador-provincias').textContent = '0 provincias';
+                    return;
+                }
+
+                actualizarTablaProvincias(provincias);
+                
+            } catch (error) {
+                console.error('Error cargando provincias:', error);
+                loading.style.display = 'none';
+                tbody.innerHTML = '<tr><td colspan="3" style="text-align: center; color: #e74c3c;">❌ Error al cargar provincias: ' + error.message + '</td></tr>';
+                mostrarMensaje('❌ Error al cargar provincias: ' + error.message, 'error');
+            }
+        }
+
+        // Función para actualizar la tabla con las provincias
+        function actualizarTablaProvincias(provincias) {
+            const tbody = document.getElementById('provincias-tbody');
+            
+            document.getElementById('contador-provincias').textContent = `${provincias.length} provincia${provincias.length !== 1 ? 's' : ''}`;
+            tbody.innerHTML = '';
+            
+            provincias.forEach(provincia => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td>${provincia.id_provincia || 'N/A'}</td>
+                    <td><strong>${provincia.nombre_provincia || 'Sin nombre'}</strong></td>
+                    <td class="action-buttons">
+                        <button class="btn btn-warning btn-sm" onclick="editarProvincia(${provincia.id_provincia})">
+                            ✏️ Editar
+                        </button>
+                        <button class="btn btn-danger btn-sm" onclick="eliminarProvincia(${provincia.id_provincia})">
+                            🗑️ Eliminar
+                        </button>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        async function editarProvincia(id) {
+            try {
+                mostrarMensaje('Cargando datos de la provincia...');
+                
+                const response = await fetch(`${API_BASE}/provincia/readById/${id}`);
+                
+                if (!response.ok) {
+                    throw new Error('Error al cargar provincia para editar');
+                }
+                
+                const provincia = await response.json();
+                
+                if (!provincia) {
+                    throw new Error('Provincia no encontrada');
+                }
+                
+                // Llenar formulario con datos de la provincia
+                document.getElementById('provincia-id').value = provincia.id_provincia;
+                document.getElementById('nombre-provincia').value = provincia.nombre_provincia || '';
+                
+                // Cambiar título del formulario
+                document.getElementById('form-title-provincias').textContent = '✏️ Editar Provincia';
+                
+                // Scroll to form
+                document.getElementById('provincia-form').scrollIntoView({ 
+                    behavior: 'smooth',
+                    block: 'start'
+                });
+                
+                mostrarMensaje('✅ Formulario listo para editar provincia');
+                
+            } catch (error) {
+                console.error('Error:', error);
+                mostrarMensaje('❌ Error al cargar provincia para editar: ' + error.message, 'error');
+            }
+        }
+
+        async function eliminarProvincia(id) {
+            if (!confirm(`¿Está seguro de que desea eliminar la provincia con ID ${id}? Esta acción no se puede deshacer.`)) {
+                return;
+            }
+
+            try {
+                const response = await fetch(`${API_BASE}/provincia/delete/${id}`, {
+                    method: 'DELETE'
+                });
+
+                if (response.ok) {
+                    mostrarMensaje('✅ Provincia eliminada correctamente');
+                    
+                    // Actualizar la lista inmediatamente sin recargar
+                    // Filtrar la provincia eliminada de la lista global
+                    provinciasGlobal = provinciasGlobal.filter(provincia => provincia.id_provincia !== id);
+                    actualizarTablaProvincias(provinciasGlobal);
+                } else {
+                    throw new Error('Error al eliminar provincia');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                mostrarMensaje('❌ Error al eliminar provincia: ' + error.message, 'error');
+            }
+        }
+
+        function limpiarFormularioProvincias() {
+            document.getElementById('provincia-form').reset();
+            document.getElementById('provincia-id').value = '';
+            document.getElementById('form-title-provincias').textContent = '➕ Agregar Provincia';
+            
+            // Limpiar errores
+            document.querySelectorAll('.error-message').forEach(error => {
+                error.textContent = '';
+            });
+            document.querySelectorAll('.form-control').forEach(input => {
+                input.classList.remove('error');
+            });
+        }
+
+        function filtrarProvincias() {
+            const term = document.getElementById('buscar-provincias').value.toLowerCase();
+            
+            if (!term) {
+                // Si no hay término de búsqueda, mostrar todas las provincias
+                actualizarTablaProvincias(provinciasGlobal);
+                return;
+            }
+            
+            // Filtrar provincias según el término de búsqueda
+            const provinciasFiltradas = provinciasGlobal.filter(provincia => {
+                const idProvincia = provincia.id_provincia?.toString() || '';
+                const nombre = provincia.nombre_provincia?.toLowerCase() || '';
+                
+                return idProvincia.includes(term) || 
+                       nombre.includes(term);
+            });
+            
+            actualizarTablaProvincias(provinciasFiltradas);
+        }
+
+        // ========== FUNCIONES TIENDAS ==========
+        async function cargarTiendas() {
+            const tbody = document.getElementById('tiendas-tbody');
+            const loading = document.getElementById('loading-tiendas');
+            const noData = document.getElementById('no-tiendas');
+            
+            try {
+                loading.style.display = 'block';
+                noData.style.display = 'none';
+                tbody.innerHTML = '<tr><td colspan="7" style="text-align: center;">🔄 Cargando...</td></tr>';
+
+                const response = await fetch(`${API_BASE}/tienda/readAll`);
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+                
+                const tiendas = await response.json();
+                
+                // Guardar tiendas en variable global
+                tiendasGlobal = tiendas || [];
+                
+                loading.style.display = 'none';
+                
+                if (!tiendas || tiendas.length === 0) {
+                    noData.style.display = 'block';
+                    tbody.innerHTML = '';
+                    document.getElementById('contador-tiendas').textContent = '0 tiendas';
+                    return;
+                }
+
+                actualizarTablaTiendas(tiendas);
+                
+            } catch (error) {
+                console.error('Error cargando tiendas:', error);
+                loading.style.display = 'none';
+                tbody.innerHTML = '<tr><td colspan="7" style="text-align: center; color: #e74c3c;">❌ Error al cargar tiendas: ' + error.message + '</td></tr>';
+                mostrarMensaje('❌ Error al cargar tiendas: ' + error.message, 'error');
+            }
+        }
+
+        // Función para actualizar la tabla con las tiendas
+        function actualizarTablaTiendas(tiendas) {
+            const tbody = document.getElementById('tiendas-tbody');
+            
+            document.getElementById('contador-tiendas').textContent = `${tiendas.length} tienda${tiendas.length !== 1 ? 's' : ''}`;
+            tbody.innerHTML = '';
+            
+            tiendas.forEach(tienda => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td>${tienda.id_tienda || 'N/A'}</td>
+                    <td><strong>${tienda.nombre_tienda || 'Sin nombre'}</strong></td>
+                    <td>${tienda.direccion_exacta || 'N/A'}</td>
+                    <td>${tienda.telefono_tienda || 'N/A'}</td>
+                    <td>${tienda.email_tienda || 'Sin email'}</td>
+                    <td>${tienda.id_provincia || tienda.provincia?.id_provincia || 'N/A'}</td>
+                    <td class="action-buttons">
+                        <button class="btn btn-warning btn-sm" onclick="editarTienda(${tienda.id_tienda})">
+                            ✏️ Editar
+                        </button>
+                        <button class="btn btn-danger btn-sm" onclick="eliminarTienda(${tienda.id_tienda})">
+                            🗑️ Eliminar
+                        </button>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        async function editarTienda(id) {
+            try {
+                mostrarMensaje('Cargando datos de la tienda...');
+                
+                const response = await fetch(`${API_BASE}/tienda/readById/${id}`);
+                
+                if (!response.ok) {
+                    throw new Error('Error al cargar tienda para editar');
+                }
+                
+                const tienda = await response.json();
+                
+                if (!tienda) {
+                    throw new Error('Tienda no encontrada');
+                }
+                
+                // Llenar formulario con datos de la tienda
+                document.getElementById('tienda-id').value = tienda.id_tienda;
+                document.getElementById('nombre-tienda').value = tienda.nombre_tienda || '';
+                document.getElementById('direccion-tienda').value = tienda.direccion_exacta || '';
+                document.getElementById('telefono-tienda').value = tienda.telefono_tienda || '';
+                document.getElementById('email-tienda').value = tienda.email_tienda || '';
+                document.getElementById('id-provincia-tienda').value = tienda.id_provincia || tienda.provincia?.id_provincia || '';
+                
+                // Cambiar título del formulario
+                document.getElementById('form-title-tiendas').textContent = '✏️ Editar Tienda';
+                
+                // Scroll to form
+                document.getElementById('tienda-form').scrollIntoView({ 
+                    behavior: 'smooth',
+                    block: 'start'
+                });
+                
+                mostrarMensaje('✅ Formulario listo para editar tienda');
+                
+            } catch (error) {
+                console.error('Error:', error);
+                mostrarMensaje('❌ Error al cargar tienda para editar: ' + error.message, 'error');
+            }
+        }
+
+        async function eliminarTienda(id) {
+            if (!confirm(`¿Está seguro de que desea eliminar la tienda con ID ${id}? Esta acción no se puede deshacer.`)) {
+                return;
+            }
+
+            try {
+                const response = await fetch(`${API_BASE}/tienda/delete/${id}`, {
+                    method: 'DELETE'
+                });
+
+                if (response.ok) {
+                    mostrarMensaje('✅ Tienda eliminada correctamente');
+                    
+                    // Actualizar la lista inmediatamente sin recargar
+                    // Filtrar la tienda eliminada de la lista global
+                    tiendasGlobal = tiendasGlobal.filter(tienda => tienda.id_tienda !== id);
+                    actualizarTablaTiendas(tiendasGlobal);
+                } else {
+                    throw new Error('Error al eliminar tienda');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                mostrarMensaje('❌ Error al eliminar tienda: ' + error.message, 'error');
+            }
+        }
+
+        function limpiarFormularioTiendas() {
+            document.getElementById('tienda-form').reset();
+            document.getElementById('tienda-id').value = '';
+            document.getElementById('form-title-tiendas').textContent = '➕ Agregar Tienda';
+            
+            // Limpiar errores
+            document.querySelectorAll('.error-message').forEach(error => {
+                error.textContent = '';
+            });
+            document.querySelectorAll('.form-control').forEach(input => {
+                input.classList.remove('error');
+            });
+        }
+
+        function filtrarTiendas() {
+            const term = document.getElementById('buscar-tiendas').value.toLowerCase();
+            
+            if (!term) {
+                // Si no hay término de búsqueda, mostrar todas las tiendas
+                actualizarTablaTiendas(tiendasGlobal);
+                return;
+            }
+            
+            // Filtrar tiendas según el término de búsqueda
+            const tiendasFiltradas = tiendasGlobal.filter(tienda => {
+                const idTienda = tienda.id_tienda?.toString() || '';
+                const nombre = tienda.nombre_tienda?.toLowerCase() || '';
+                const direccion = tienda.direccion_exacta?.toLowerCase() || '';
+                const telefono = tienda.telefono_tienda?.toString() || '';
+                const email = tienda.email_tienda?.toLowerCase() || '';
+                const idProvincia = (tienda.id_provincia || tienda.provincia?.id_provincia)?.toString() || '';
+                
+                return idTienda.includes(term) || 
+                       nombre.includes(term) || 
+                       direccion.includes(term) ||
+                       telefono.includes(term) ||
+                       email.includes(term) ||
+                       idProvincia.includes(term);
+            });
+            
+            actualizarTablaTiendas(tiendasFiltradas);
+        }
+
+        // ========== FUNCIONES RESpaldo ==========
+        async function cargarRespaldo() {
+            const tbody = document.getElementById('respaldo-tbody');
+            const loading = document.getElementById('loading-respaldo');
+            const noData = document.getElementById('no-respaldo');
+            
+            try {
+                loading.style.display = 'block';
+                noData.style.display = 'none';
+                tbody.innerHTML = '<tr><td colspan="8" style="text-align: center;">🔄 Cargando...</td></tr>';
+
+                const response = await fetch(`${API_BASE}/respaldo/readAll`);
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+                
+                const respaldo = await response.json();
+                
+                // Guardar respaldo en variable global
+                respaldoGlobal = respaldo || [];
+                
+                loading.style.display = 'none';
+                
+                if (!respaldo || respaldo.length === 0) {
+                    noData.style.display = 'block';
+                    tbody.innerHTML = '';
+                    document.getElementById('contador-respaldo').textContent = '0 registros';
+                    return;
+                }
+
+                actualizarTablaRespaldo(respaldo);
+                
+            } catch (error) {
+                console.error('Error cargando respaldo:', error);
+                loading.style.display = 'none';
+                tbody.innerHTML = '<tr><td colspan="8" style="text-align: center; color: #e74c3c;">❌ Error al cargar respaldo: ' + error.message + '</td></tr>';
+                mostrarMensaje('❌ Error al cargar respaldo: ' + error.message, 'error');
+            }
+        }
+
+        // Función para actualizar la tabla con el respaldo
+        function actualizarTablaRespaldo(respaldo) {
+            const tbody = document.getElementById('respaldo-tbody');
+            
+            document.getElementById('contador-respaldo').textContent = `${respaldo.length} registro${respaldo.length !== 1 ? 's' : ''}`;
+            tbody.innerHTML = '';
+            
+            respaldo.forEach(resp => {
+                const tr = document.createElement('tr');
+                
+                // Determinar el badge según la operación
+                let badgeClass = 'badge';
+                let badgeText = resp.operacion || 'N/A';
+                
+                switch(resp.operacion?.toLowerCase()) {
+                    case 'insert':
+                        badgeClass += ' badge-success';
+                        badgeText = 'INSERTAR';
+                        break;
+                    case 'update':
+                        badgeClass += ' badge-warning';
+                        badgeText = 'ACTUALIZAR';
+                        break;
+                    case 'delete':
+                        badgeClass += ' badge-danger';
+                        badgeText = 'ELIMINAR';
+                        break;
+                    default:
+                        badgeClass += ' badge-info';
+                }
+                
+                tr.innerHTML = `
+                    <td>${resp.id_respaldo || 'N/A'}</td>
+                    <td><strong>${resp.nombre_tabla || 'N/A'}</strong></td>
+                    <td>${resp.id_tabla || 'N/A'}</td>
+                    <td><span class="${badgeClass}">${badgeText}</span></td>
+                    <td>${resp.fecha_hora ? new Date(resp.fecha_hora).toLocaleString() : 'N/A'}</td>
+                    <td>${resp.usuario || 'Sistema'}</td>
+                    <td>
+                        ${resp.datos_anteriores ? 
+                            `<div class="json-viewer" title="Datos anteriores">${formatJSON(resp.datos_anteriores)}</div>` : 
+                            '<em>Sin datos anteriores</em>'
+                        }
+                    </td>
+                    <td>
+                        ${resp.datos_nuevos ? 
+                            `<div class="json-viewer" title="Datos nuevos">${formatJSON(resp.datos_nuevos)}</div>` : 
+                            '<em>Sin datos nuevos</em>'
+                        }
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        // Función para formatear JSON para mejor visualización
+        function formatJSON(jsonString) {
+            try {
+                if (!jsonString) return 'N/A';
+                const parsed = JSON.parse(jsonString);
+                return JSON.stringify(parsed, null, 2);
+            } catch (e) {
+                return jsonString; // Si no es JSON válido, mostrar como texto plano
+            }
+        }
+
+        function filtrarRespaldo() {
+            const term = document.getElementById('buscar-respaldo').value.toLowerCase();
+            
+            if (!term) {
+                // Si no hay término de búsqueda, mostrar todo el respaldo
+                actualizarTablaRespaldo(respaldoGlobal);
+                return;
+            }
+            
+            // Filtrar respaldo según el término de búsqueda
+            const respaldoFiltrado = respaldoGlobal.filter(resp => {
+                const idRespaldo = resp.id_respaldo?.toString() || '';
+                const nombreTabla = resp.nombre_tabla?.toLowerCase() || '';
+                const idTabla = resp.id_tabla?.toString() || '';
+                const operacion = resp.operacion?.toLowerCase() || '';
+                const fechaHora = resp.fecha_hora ? new Date(resp.fecha_hora).toLocaleString().toLowerCase() : '';
+                const usuario = resp.usuario?.toLowerCase() || '';
+                const datosAnteriores = resp.datos_anteriores?.toLowerCase() || '';
+                const datosNuevos = resp.datos_nuevos?.toLowerCase() || '';
+                
+                return idRespaldo.includes(term) || 
+                       nombreTabla.includes(term) || 
+                       idTabla.includes(term) ||
+                       operacion.includes(term) ||
+                       fechaHora.includes(term) ||
+                       usuario.includes(term) ||
+                       datosAnteriores.includes(term) ||
+                       datosNuevos.includes(term);
+            });
+            
+            actualizarTablaRespaldo(respaldoFiltrado);
+        }
+
+        // Función para exportar el respaldo
+        function exportarRespaldo() {
+            if (respaldoGlobal.length === 0) {
+                mostrarMensaje('❌ No hay datos para exportar', 'error');
+                return;
+            }
+
+            try {
+                // Crear contenido CSV
+                let csvContent = "ID Respaldo,Tabla,ID Tabla,Operación,Fecha/Hora,Usuario,Datos Anteriores,Datos Nuevos\n";
+                
+                respaldoGlobal.forEach(resp => {
+                    const row = [
+                        resp.id_respaldo || '',
+                        `"${resp.nombre_tabla || ''}"`,
+                        resp.id_tabla || '',
+                        `"${resp.operacion || ''}"`,
+                        `"${resp.fecha_hora ? new Date(resp.fecha_hora).toLocaleString() : ''}"`,
+                        `"${resp.usuario || 'Sistema'}"`,
+                        `"${(resp.datos_anteriores || '').replace(/"/g, '""')}"`,
+                        `"${(resp.datos_nuevos || '').replace(/"/g, '""')}"`
+                    ];
+                    csvContent += row.join(',') + '\n';
+                });
+
+                // Crear y descargar archivo
+                const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+                const link = document.createElement('a');
+                const url = URL.createObjectURL(blob);
+                
+                link.setAttribute('href', url);
+                link.setAttribute('download', `respaldo_${new Date().toISOString().split('T')[0]}.csv`);
+                link.style.visibility = 'hidden';
+                
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+                
+                mostrarMensaje('✅ Respaldo exportado correctamente');
+                
+            } catch (error) {
+                console.error('Error exportando respaldo:', error);
+                mostrarMensaje('❌ Error al exportar respaldo: ' + error.message, 'error');
+            }
+        }
+
+        // ========== INICIALIZACIÓN ==========
+        document.addEventListener('DOMContentLoaded', function() {
+            cargarClientes();
+        });
+    </script>
+</body>
+</html>
